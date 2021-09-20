@@ -38,7 +38,9 @@ export default {
       let targetGroup = findGroup(state, group._id);
       console.assert(targetGroup, 'group is missing');
       targetGroup.name = group.name;
-      targetGroup.users = group.users || [];
+      if (group.users) {
+          targetGroup.users = group.users;
+      }
       targetGroup.apiKeys = group.apiKeys || [];
       targetGroup.servicesHosts = group.servicesHosts || [];
     },
