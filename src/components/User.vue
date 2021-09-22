@@ -45,7 +45,10 @@ export default {
           return await this.deleteUser(this.user);
         } catch (e) {
           console.error(e.response.data);
-          alert(e.response.data);
+          const message = e.response.data.length > 1 ?
+            `Could not delete user because of the following errors:\n${e.response.data.join('\n')}` :
+            `Could not delete user: ${e.response.data[0]}`;
+          alert(message);
         }
       }
     },
