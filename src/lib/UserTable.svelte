@@ -15,7 +15,7 @@
       <TableBodyCell></TableBodyCell>
       <TableBodyCell><Spinner/></TableBodyCell>
     </TableBodyRow>
-  {:then _users}
+  {:then _usersReady}  
     {#each shownStudents as student}
       <TableBodyRow>
         <TableBodyCell class="!p-4">
@@ -39,19 +39,51 @@
   {/await}
   </TableBody>
 </TableSearch>
-<Button class="right-0" on:click={() => addingStudent = !addingStudent}>Add student</Button>
+<div class="right-0">
+  <ButtonGroup>
+    <Button class="right-0" on:click={() => addingStudent = !addingStudent}>Add student</Button>
+    <Button><ChevronDownSolid/></Button><!-- TODO: Decrease left padding -->
+    <Dropdown>
+        <DropdownItem on:click={() => addingFromFile = !addingFromFile}>Add students from file...</DropdownItem>
+    </Dropdown>
+  </ButtonGroup>
+</div>
 <AddUserDialog
   bind:open={addingStudent}
   groupId={groupId}
   on:userCreated={event => students = [...students, event.detail]}
 />
+<AddUsersFromFileDialog
+  bind:open={addingFromFile}
+  groupId={groupId}
+  on:usersCreated={event => students = [...students, ...event.detail]}
+/>
+<!-- TODO: add summary of errors? -->
 
 
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { Button, Table, TableSearch, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell, Checkbox, Tabs, TabItem, Spinner, Dropdown, DropdownItem } from 'flowbite-svelte';
+  import {
+    Button,
+    ButtonGroup,
+    Table,
+    TableSearch,
+    TableBody,
+    TableBodyCell,
+    TableBodyRow,
+    TableHead,
+    TableHeadCell,
+    Checkbox,
+    Tabs,
+    TabItem,
+    Spinner,
+    Dropdown,
+    DropdownItem
+  } from 'flowbite-svelte';
+  import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import api from '$lib/api';
   import AddUserDialog from '$lib/AddUserDialog.svelte';
+  import AddUsersFromFileDialog from '$lib/AddUsersFromFileDialog.svelte';
 
   export let groupId;
 
@@ -65,6 +97,7 @@
   });
 
   let addingStudent = false;
+  let addingFromFile = false;
   let searchTerm = '';
   $: shownStudents = applySearch(searchTerm, students);
 

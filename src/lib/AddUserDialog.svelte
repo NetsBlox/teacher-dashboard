@@ -45,7 +45,7 @@
       console.log('created user', user);
       dispatch('userCreated', user);
     } catch (err) {
-      // TODO: emit error
+      dispatch('error', err);
       // TODO: test errors
     }
   }
