@@ -24,7 +24,7 @@
         <TableBodyCell>{student.username}</TableBodyCell>
         <TableBodyCell>{student.email}</TableBodyCell>
         <TableBodyCell>
-          <a href="/tables" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
+          <a href="/users/{encodeURIComponent(student.username)}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
           <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
         </TableBodyCell>
       </TableBodyRow>
