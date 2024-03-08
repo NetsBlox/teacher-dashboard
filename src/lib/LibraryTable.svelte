@@ -4,9 +4,8 @@
       <Checkbox />
     </TableHeadCell>
     <TableHeadCell>name</TableHeadCell>
-    <TableHeadCell>contributors</TableHeadCell>
-    <TableHeadCell>state</TableHeadCell>
-    <TableHeadCell>updated at</TableHeadCell>
+    <TableHeadCell>description</TableHeadCell>
+    <TableHeadCell>actions</TableHeadCell>
   </TableHead>
   <TableBody>
   {#await librariesP}
@@ -24,10 +23,9 @@
             <Checkbox />
           </TableBodyCell>
           <TableBodyCell>{library.name}</TableBodyCell>
-          <TableBodyCell>{library.owner}</TableBodyCell>
           <TableBodyCell>{library.notes}</TableBodyCell>
           <TableBodyCell>
-            <a href="/tables" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
+            <a href="{editorUrl(libraryUrl(library.owner, library.name))}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Open in NetsBlox</a>
             <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
           </TableBodyCell>
         </TableBodyRow>
@@ -53,7 +51,7 @@
 </TableSearch>
 <div class="right-0">
   <ButtonGroup>
-    <Button class="right-0" on:click={() => importingProject = !importingProject}>Import Project</Button>
+    <Button class="right-0" on:click={() => importingLibrary = !importingLibrary}>Import Project</Button>
   </ButtonGroup>
 </div>
 <!-- TODO: add summary of errors? -->
@@ -80,11 +78,13 @@
   } from 'flowbite-svelte';
   import { ChevronDownSolid } from 'flowbite-svelte-icons';
   import api from '$lib/api';
+  import { editorUrl, libraryUrl } from "$lib/routes";
 
   export let username;
 
   let libraries = [];
   let shownLibraries = [];
+  let importingLibrary = false;
   let librariesP;
 
   onMount(() => {

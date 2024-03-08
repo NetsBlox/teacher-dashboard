@@ -1,4 +1,4 @@
-import NetsBloxApi from 'netsblox-cloud-client/src/api';
+import NetsBloxApi from "netsblox-cloud-client/src/api";
+import { CLOUD_URL } from "$lib/routes";
 
-// FIXME: make this configurable
-export default new NetsBloxApi("https://cloud.netsblox.org");
+export default new NetsBloxApi(CLOUD_URL);

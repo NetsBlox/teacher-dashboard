@@ -14,14 +14,13 @@
   let username;
   let usernameP;
   onMount(() => {
+    // Redirect to login page, if not logged in
+    // Otherwise, redirect to view logged in user
     usernameP = api.whoami()
       .then(username => goto(`/users/${encodeURIComponent(username)}`))
       .catch(err => {
         console.log('error!', err);
-        const cloudUrl = api.baseUrl;
-        //window.location = `https://login.netsblox.org?redirect=${encodeURIComponent(window.location.href)}&url=${encodeURIComponent(cloudUrl)}`;
-      })  // FIXME
+        window.location = loginUrl(window.location.href);
+      })
   });
-  // Redirect to login page, if not logged in
-  // Otherwise, redirect to view logged in user
 </script>
