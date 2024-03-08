@@ -23,6 +23,13 @@ export function libraryUrl(owner: string, name: string): string {
   return `${CLOUD_URL}/libraries/user/${owner}/${name}`;
 }
 
+export namespace dashboard {
+  export function classUrl(id: string): string {
+    [id] = encode(id);
+    return `/classes/${id}`;
+  }
+}
+
 function encode(...params: string[]): string[] {
   return params.map((param) => encodeURIComponent(param));
 }
