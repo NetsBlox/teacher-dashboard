@@ -20,12 +20,11 @@
         <TableBodyCell class="!p-4">
           <Checkbox />
         </TableBodyCell>
-        <TableBodyCell>{clazz.username}</TableBodyCell>
-        <TableBodyCell>{clazz.email}</TableBodyCell>
+        <TableBodyCell>{clazz.name}</TableBodyCell>
         <TableBodyCell>
             <!-- FIXME: goto -> not href! right? -->
-          <a href="dashboard.classUrl(clazz.id)" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
-          <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
+          <a href="{dashboard.classUrl(clazz.id)}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
+          <a on:click={() => deleteGroup(clazz.id)} class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
         </TableBodyCell>
       </TableBodyRow>
     {/each}
@@ -53,6 +52,7 @@
 
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { dashboard } from "$lib/routes";
   import {
     Button,
     ButtonGroup,
@@ -93,6 +93,13 @@
 
   function applySearch(searchTerm: string, classes) {
     // TODO: make this fuzzy?
-    return classes.filter((student) => student.username.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+  console.log({classes})
+    return classes.filter((clazz) => clazz.name.toLowerCase().indexOf(searchTerm.toLowerCase()) !== -1);
+  }
+
+  function deleteGroup(id: string) {
+    // TODO: show confirmation
+    // TODO: show error/success
+    api.deleteGroup(id);
   }
 </script>

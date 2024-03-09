@@ -25,7 +25,7 @@
         <TableBodyCell>{student.email}</TableBodyCell>
         <TableBodyCell>
           <a href="/users/{encodeURIComponent(student.username)}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">View</a>
-          <a href="/tables" class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
+          <a on:click={() => tryDeleteUser = true} class="font-medium text-red-600 hover:underline dark:text-red-500">Delete</a>
         </TableBodyCell>
       </TableBodyRow>
     {/each}
@@ -58,6 +58,12 @@
   groupId={groupId}
   on:usersCreated={event => students = [...students, ...event.detail]}
 />
+<ConfirmDialog
+  title="Delete user?"
+  message="Are you sure you would like to delete username?"
+  action={() => console.log('deleting!')}
+  bind:open={tryDeleteUser}
+  />
 <!-- TODO: add summary of errors? -->
 
 
@@ -84,6 +90,7 @@
   import api from '$lib/api';
   import AddUserDialog from '$lib/AddUserDialog.svelte';
   import AddUsersFromFileDialog from '$lib/AddUsersFromFileDialog.svelte';
+  import ConfirmDialog from "$lib/ConfirmDialog.svelte";
 
   export let groupId;
 
@@ -99,6 +106,7 @@
   let addingStudent = false;
   let addingFromFile = false;
   let searchTerm = '';
+  let tryDeleteUser = false;
   $: shownStudents = applySearch(searchTerm, students);
 
   function applySearch(searchTerm: string, students) {
