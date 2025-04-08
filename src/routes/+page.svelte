@@ -1,26 +1,35 @@
-{#await usernameP}
-  <Spinner class="center"/>
-{:then _username}  
-{:catch error}  
-  <!-- TODO: show the error! -->
-{/await}
-
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { Spinner } from 'flowbite-svelte';
-  import api from '$lib/api';
-  import { goto } from "$app/navigation";
+  import { goto } from '$app/navigation';
+  import { page } from '$app/state';
+  import { loginUrl } from '$lib/utils/routes';
+  import { Button } from 'flowbite-svelte';
 
-  let username;
-  let usernameP;
-  onMount(() => {
-    // Redirect to login page, if not logged in
-    // Otherwise, redirect to view logged in user
-    usernameP = api.whoami()
-      .then(username => goto(`/users/${encodeURIComponent(username)}`))
-      .catch(err => {
-        console.log('error!', err);
-        window.location = loginUrl(window.location.href);
-      })
-  });
+  const { data } = $props();
+
+  const handleClick = () => {
+    if (data.authUser) goto('/users/' + data.authUser);
+    else window.location.href = loginUrl(page.url);
+  };
 </script>
+
+<!-- Text Section -->
+<section
+  class="container mx-auto flex flex-col items-center justify-center pt-10 md:flex-row"
+>
+  <span
+    class="text-center align-middle text-5xl font-bold xl:text-6xl dark:text-gray-50 "
+  >
+    Manage Everything NetsBlox in One Place!
+  </span>
+  <!-- Image Grid Section -->
+  <figure class="scale-85 pt-10 brightness-90">
+    <video autoplay loop> 
+      <source src="src/assets/demo.webm" type="video/webm"/>
+      <track kind='captions' srclang="en" src='src/lib/utils/captions/landing.vtt' label="English"/>
+    </video>
+  </figure>
+</section>
+<section class="flex flex-row justify-center">
+  <Button onclick={handleClick} pill size="xl" color="dark">Get Started!</Button
+  >
+</section>

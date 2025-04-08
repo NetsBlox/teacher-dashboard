@@ -1,36 +1,33 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { Tabs, TabItem, Spinner } from 'flowbite-svelte';
+  import { Tabs, TabItem } from 'flowbite-svelte';
 
-  import ProjectTable from '$lib/ProjectTable.svelte';
-  import LibraryTable from '$lib/LibraryTable.svelte';
-  import ClassTable from '$lib/ClassTable.svelte';
-  import { page } from '$app/stores';
-  import api from '$lib/api';
+  import ProjectTable from '$lib/components/ProjectTable.svelte';
+  import GroupTable from '$lib/components/GroupTable.svelte';
+  import LibraryTable from '$lib/components/LibraryTable.svelte';
 
-  const username = $page.params.username;
-  let userP;
+  import type { PageProps } from './$types';
 
-  // TODO: if we are not a group member, show our classes
-  onMount(() => {
-    userP = api.viewUser(username);
-  });
+  let { data }: PageProps = $props();
+
+  const { user, projects, shared, groups, libraries } = $derived(data);
+  const owner = $derived(user.username);
 </script>
 
 <Tabs>
-  {#await userP}
-    <Spinner/>
-  {:then userData}
-    {#if !userData?.groupId}
-      <TabItem title="Classes">
-        <ClassTable username={username} />
+  <TabItem open title="Groups">
+    <GroupTable {groups} {owner} />
+  </TabItem>
+  <TabItem title="Projects">
+    <Tabs tabStyle="underline">
+      <TabItem open title="My Projects">
+        <ProjectTable {projects} {owner} />
       </TabItem>
-    {/if}
-    <TabItem open title="Projects">
-      <ProjectTable username={username} />
-    </TabItem>
-    <TabItem title="Libraries">
-      <LibraryTable username={username} />
-    </TabItem>
-  {/await}
+      <TabItem title="Collaborations">
+        <ProjectTable projects={shared} {owner} />
+      </TabItem>
+    </Tabs>
+  </TabItem>
+  <TabItem title="Libraries">
+    <LibraryTable {libraries} {owner} />
+  </TabItem>
 </Tabs>
