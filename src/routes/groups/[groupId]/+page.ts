@@ -3,6 +3,7 @@ import { RequestError } from 'netsblox-cloud-client/src/error';
 import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import type { PageLoad } from './$types';
+import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
 
 type Fetch = (
   input: RequestInfo | URL,
@@ -31,10 +32,23 @@ const getMembers = async (fetch: Fetch, groupId: string) => {
   return (await response.json()) as User[];
 };
 
+
+const getAssignments = async (fetch: Fetch, groupId: string) => {
+  const response = await fetch(CLOUD_URL + '/groups/id/' + groupId + '/assignments/', {
+    credentials: 'include',
+  });
+  if (!response.ok) {
+    throw RequestError.from(response);
+  }
+
+  return (await response.json()) as Assignment[];
+};
+
 export const load: PageLoad = async ({ fetch, params }) => {
   const groupP = getGroup(fetch, params.groupId)
   const membersP = getMembers(fetch, params.groupId)
-  const [group, members] = await Promise.all([groupP, membersP])
+  const assignmentsP = getAssignments(fetch, params.groupId)
+  const [group, members, assignments] = await Promise.all([groupP, membersP, assignmentsP])
 
-  return {group, members}
+  return {group, members, assignments}
 };

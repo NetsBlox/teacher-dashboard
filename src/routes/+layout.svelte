@@ -5,6 +5,7 @@
   import Nav from '$lib/components/Nav.svelte';
   import { Alert } from 'flowbite-svelte';
   import { InfoCircleSolid } from 'flowbite-svelte-icons';
+  import ErrorToastSet from '$lib/components/ErrorToastSet.svelte'
 
   import { fade } from 'svelte/transition';
   import type { LayoutProps } from './$types';
@@ -20,12 +21,12 @@
 <main>
 
   <Nav {url} authUser={data.authUser}/>
+  <ErrorToastSet/>
   {#if cloudDown}
     <Alert
       dismissable={true}
       border
-      color="none"
-      transition={fade}
+      color="none"      transition={fade}
       class="text-gray-100 dark:bg-red-800"
     >
       <InfoCircleSolid slot="icon" class="h-5 w-5" />

@@ -1,4 +1,5 @@
 export const CLOUD_URL = import.meta.env.VITE_CLOUD_URL;
+export const BROWSER_URL = import.meta.env.VITE_BROWSER_URL;
 export const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 
 export function loginUrl(redirectUrl: URL): string {

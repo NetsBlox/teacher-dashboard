@@ -8,7 +8,7 @@ import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreatePr
 import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
-const Fns: TableFns<ProjectMetadata, CreateProjectData> = {
+const Fns: TableFns<ProjectMetadata, CreateProjectData, string> = {
   createFn: (data, _owner) => api.createProject(data),
   readFn: (owner) => api.listUserProjects(owner),
   deleteFn: (entry) => api.deleteProject(entry.id),
@@ -18,7 +18,8 @@ const Fns: TableFns<ProjectMetadata, CreateProjectData> = {
 
 export class ProjectOwnedTableContext extends GenericTableContext<
   ProjectMetadata,
-  CreateProjectData
+  CreateProjectData,
+  string
 > {
   constructor(
     owner: string,

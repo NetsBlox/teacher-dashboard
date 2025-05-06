@@ -3,6 +3,7 @@ import api from '$lib/utils/api';
 import { CLOUD_URL } from '$lib/utils/routes';
 import type { StringKey, TableEntryAction, TableFns } from '$lib/utils/types';
 import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
+import type { GroupId} from 'netsblox-cloud-client/src/types/GroupId';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
@@ -13,9 +14,7 @@ export type BatchData = {
   email: string;
 };
 
-// NOTE: GroupId is in the generic owner field.
-// In the generic, it may be better to rename the owner field to something more 'generic'
-const Fns: TableFns<User, NewUser> = {
+const Fns: TableFns<User, NewUser, GroupId> = {
   createFn: (data, groupId) => {
     data.groupId = groupId;
     return api.createUser(data);
@@ -26,13 +25,13 @@ const Fns: TableFns<User, NewUser> = {
     invalidate(CLOUD_URL + '/groups/id/' + groupId + '/members'),
 };
 
-const actions: TableEntryAction<User>[] = [
+const actions: TableEntryAction<User, GroupId>[] = [
   function view(entry) {
     goto('/users/' + entry.value.username + '/');
   },
 ];
 
-export class GroupUserTableContext extends GenericTableContext<User, NewUser> {
+export class GroupUserTableContext extends GenericTableContext<User, NewUser, GroupId> {
   actions = actions;
   constructor(
     groupId: string,

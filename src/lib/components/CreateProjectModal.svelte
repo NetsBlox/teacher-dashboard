@@ -1,25 +1,32 @@
 <script lang="ts">
   import { Button, Modal, Hr, Label, Input } from 'flowbite-svelte';
-  import type { LibraryTableContext } from '$lib/contexts/LibraryTableContext.svelte';
   import type { CreateLibraryData } from 'netsblox-cloud-client/src/types/CreateLibraryData';
   import Dropzone from './Dropzone.svelte';
+  import type { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
+  import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
+  import { parseProject } from '$lib/utils/utils';
 
   type Props = {
-    context: LibraryTableContext;
+    context: ProjectOwnedTableContext;
   };
 
   let { context }: Props = $props();
-  let data: CreateLibraryData = $state({
+  let data: CreateProjectData = $state({
     name: '',
-    notes: '',
-    blocks: '',
+    roles: []
   });
+
   let file: File | undefined = $state(undefined);
   let dragging = $state(false);
 
   const handleCreate = async () => {
-    data.blocks = file? await file.text(): '';
-    context.createEntry(data)
+    if (!file){
+      //FIXME: add error context and update it here
+      return
+    }
+    const xml = await file.text()
+    const projectObj = parseProject(xml)
+    
   }
 </script>
 
@@ -27,22 +34,17 @@
   bind:open={context.createOpen}
   ondragover={(_e) => (dragging = true)}
   ondragleave={(_e) => (dragging = false)}
-  title="Add Library From File"
+  title="Add Project From File"
   size="xs"
-  classDialog="inset-0"
 >
   <form class="flex flex-col gap-2" ondragover={(_e) => (dragging = true)}>
-    <Label>Name:</Label>
-    <Input bind:value={data.name} />
-    <Label>Notes:</Label>
-    <Input bind:value={data.notes} />
     <Label>File:</Label>
     <Dropzone bind:file {dragging} acceptType=".xml" />
     <Hr />
     <span>
       <Button
         outline
-        onclick={() => handleCreate() }
+        onclick={() => handleCreate()}
         class="self-start"
       >
         Create

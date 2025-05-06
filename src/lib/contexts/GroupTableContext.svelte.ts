@@ -7,7 +7,7 @@ import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
-const Fns: TableFns<Group, CreateGroupData> = {
+const Fns: TableFns<Group, CreateGroupData, string> = {
   createFn: (data, owner) => api.createGroup(owner, data),
   readFn: (owner) => api.listGroups(owner),
   deleteFn: (entry) => api.deleteGroup(entry.id),
@@ -15,7 +15,7 @@ const Fns: TableFns<Group, CreateGroupData> = {
     invalidate(CLOUD_URL + '/groups/user/' + owner + '/'),
 };
 
-const actions: TableEntryAction<Group>[] = [
+const actions: TableEntryAction<Group, string>[] = [
   function view(entry) {
     goto('/groups/' + entry.value.id + '/');
   },
@@ -23,7 +23,8 @@ const actions: TableEntryAction<Group>[] = [
 
 export class GroupTableContext extends GenericTableContext<
   Group,
-  CreateGroupData
+  CreateGroupData,
+  string
 > {
   actions = actions;
   constructor(

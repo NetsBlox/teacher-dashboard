@@ -1,4 +1,5 @@
-import type { RoleData } from "netsblox-cloud-client/src/types/RoleData";
+import type { RoleData } from 'netsblox-cloud-client/src/types/RoleData';
+import type { NetsbloxTime, ProjectObj } from './types';
 
 export class DataFileError extends Error {
   constructor(filename: string, inner: Error) {
@@ -9,15 +10,43 @@ export class DataFileError extends Error {
 
 export class NoFileContentsError extends Error {
   constructor() {
-    super("Unable to read file.")
+    super('Unable to read file.');
   }
+}
+
+/**
+Create a time object format that the cloud expects. 
+@param time must be Sanitized to be \d\d:\d\d string
+**/
+export function createNetsbloxTime(date: Date, time: string): NetsbloxTime {
+  if (!RegExp(/\d{2}:\d{2}/).test(time)) {
+    throw new Error('time parameter not of format \d\d:\d\d');
+  }
+
+  const [hour, minute] = time.split(':').map((str) => Number.parseInt(str));
+  const second = 59;
+  date.setHours(hour);
+  date.setMinutes(minute);
+  date.setSeconds(second);
+  return {
+    secs_since_epoch: Math.floor(date.getTime() / 1000),
+    nanos_since_epoch: (date.getTime() % 1000) * 1000000,
+  };
+}
+
+/**
+ * remove underscores and capitalize all letters preceeded by whitespace
+ **/
+export function capitalize(str: String): String {
+  const regExp = /(?:^|\s)(\ISC-V, w)/g; // capture all letters that proceed the beginning or a white space character. The ?: defines a non-capturing group
+  return str.replace('_', ' ').replaceAll(regExp, (l) => l.toLocaleUpperCase());
 }
 
 export async function readFile(file: File): Promise<string> {
   return new Promise((res, rej) => {
     const reader = new FileReader();
-    reader.readAsText(file, 'utf-8')
-    reader.onload = evt => {
+    reader.readAsText(file, 'utf-8');
+    reader.onload = (evt) => {
       if (evt.target) {
         res(evt.target.result as string);
       } else {
@@ -27,92 +56,29 @@ export async function readFile(file: File): Promise<string> {
   });
 }
 
-// export function getRoleData(xml: string): RoleData[] {
-//   const roles = [];
-//   let name, code, snippet;
-//   let index = 0;
-//   while (index < xml.length) {
-//     const nameSpan = stringBtwn(xml, '<role name="', '">');
-//     if (!nameSpan)
-//       throw new NoFileContentsError()
-
-//     snippet = '<role name="';
-//     index = xml.indexOf(snippet)
-//     const startIndex = index + snippet.length;
-
-//     snippet = '</role>';
-//     index = xml.indexOf(snippet, startIndex)
-
-//     name = xml.substring(startIndex, index)
-//   }
-//   // TODO
-
-// }
-
-interface RoleSpan {
-  name: Span,
-  code: Span,
-  media: Span,
-}
-
-// This function returns the indices for the beginning and end of 
-// role data
-function findRoleSpan(xml: string, start: number | undefined): RoleSpan | undefined {
-  if (!start) start = 0;
-
-  const nameSpan = stringBtwn(xml, '<role name="', '">');
-  if (!nameSpan) return;
-
-  const mediaStart = xml.indexOf('<media', nameSpan.end);
-  if (mediaStart === -1) return;
-
-  const mediaEnd = xml.indexOf('</media>', mediaStart);
-  if (mediaEnd === -1) return;
-
-  const roleEnd = xml.indexOf('</role>', mediaStart);
-  if (roleEnd === -1) return;
-
-  return {
-    name: nameSpan,
-    code: {
-      start: nameSpan.end + 2,
-      end: mediaStart - 1,
-    },
-    media: {
-      start: mediaStart,
-      end: mediaEnd + 7,
-    }
-
-  };
-}
-
-interface Span {
-  start: number,
-  end: number,
-}
-
-function spanText(text: string, span: Span): string {
-  return text.substring(span.start, span.end);
-}
-
-function stringBtwn(str: string, startText: string, endText: string): Span | undefined {
-  const start = findSpan(str, startText)
-  if (start) {
-    const end = findSpan(str.slice(start.end), endText);
-    if (end) {
-      return {
-        start: start.end,
-        end: end.start - 1,
-      };
-    }
+export async function parseProject(xml: string): Promise<ProjectObj> {
+  const parser = new DOMParser();
+  const res = parser.parseFromString(xml, 'application/xml');
+  if (res.querySelector('parsererror') !== null) {
+    throw Error('Failed to parse project');
   }
+
+  const room = res.documentElement;
+  const name = room.getAttribute('name');
+  if (!name) throw Error('Failed to parse name from project file');
+
+  const rolePs = Array.from(room.children).map(parseRole);
+  const roles = await Promise.all(rolePs);
+
+  return { name, roles };
 }
 
-function findSpan(str: string, searchText: string): Span | undefined {
-  const start = str.indexOf(searchText);
-  if (start > -1) {
-    return { start, end: start + searchText.length };
-
-  }
+export async function parseRole(el: Element): Promise<RoleData> {
+  const name = el.getAttribute('name');
+  if (!name) throw Error('Failed to parse role name');
+  const code = el.querySelector('role > project')?.outerHTML;
+  if (!code) throw Error('Failed to parse code from role');
+  const media = el.querySelector('role > media')?.outerHTML;
+  if (!media) throw Error('Failed to parse media from role');
+  return { name, code, media };
 }
-

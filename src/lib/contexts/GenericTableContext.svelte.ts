@@ -1,11 +1,12 @@
 import type { TableContext, TableFns, TableEntry, StringKey } from "$lib/utils/types";
 
-export class GenericTableContext<T, CreateT>
-implements TableContext<T, CreateT> {
+export class GenericTableContext<T, CreateT, TOwner>
+implements TableContext<T, CreateT, TOwner> {
   createOpen: boolean = $state(false);
   editOpen: boolean = $state(false);
   deleteOpen: boolean = $state(false);
 
+  owner: TOwner;
   entries: TableEntry<T>[] = $state([]);
   keys: (keyof T)[];
   searchKey: StringKey<T>;
@@ -19,12 +20,11 @@ implements TableContext<T, CreateT> {
   }
 
   private _search: string = $state('');
-  private owner: string;
-  private fns: TableFns<T, CreateT>;
+  private fns: TableFns<T, CreateT, TOwner>;
 
   constructor(
-    data: TableFns<T, CreateT>,
-    owner: string,
+    data: TableFns<T, CreateT, TOwner>,
+    owner: TOwner,
     values: T[],
     keys: (keyof T)[],
     searchKey: StringKey<T>,
@@ -61,7 +61,7 @@ implements TableContext<T, CreateT> {
   async deleteSelected() {
     const promises = this.entries.reduce((filtered, current) => {
       if (current.selected && current.visible) {
-        filtered.push(this.fns.deleteFn(current.value));
+        filtered.push(this.fns.deleteFn(current.value, this.owner));
       }
       return filtered;
     }, new Array<Promise<T>>());

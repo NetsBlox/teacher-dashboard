@@ -1,35 +1,37 @@
+
 <script lang="ts">
-  import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
+  import type { User } from 'netsblox-cloud-client/src/types/User';
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from './TableHeaders.svelte';
   import TableEntries from './TableEntries.svelte';
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
-  import { ProjectSharedTableContext } from '$lib/contexts/ProjectSharedTableContext.svelte';
-  import CreateProjectModal from './CreateProjectModal.svelte';
+  import { AssignmentTableContext } from '$lib/contexts/AssignmentTableContext.svelte';
+  import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
+  import CreateAssignmentModal from './CreateAssignmentModal.svelte';
+
 
   type Props = {
-    projects: ProjectMetadata[];
-    owner: string;
+    groupId: string;
+    assignments: Assignment[];
   };
 
-  let { projects, owner}: Props = $props();
-  const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
-  const headers = ['name', 'owner'];
-  let context = $state(new ProjectSharedTableContext(owner, projects, keys, 'name'));
-
+  let { assignments, groupId }: Props = $props();
+  const keys: (keyof Assignment)[] = ['name', 'originTime', 'dueDate'];
+  const headers = ['name', 'origin time', 'due date', 'actions'];
+  let context = $state(new AssignmentTableContext(groupId, assignments, keys, 'name'));
 </script>
 
 <span class="flex flex-row items-center justify-between">
   <TableSearch
     classInput="dark:focus:ring-orange-500 dark:focus:border-orange-500"
-    placeholder="search by name"
+    placeholder="search by username"
     hoverable={true}
     bind:inputValue={context.search}
   />
   <section>
     <Button outline on:click={() => (context.createOpen = true)}>
-      <PlusOutline /> Import Project
+      <PlusOutline /> Create Assignment
     </Button>
     <Button
       on:click={() => (context.deleteOpen = true)}
@@ -42,9 +44,8 @@
   </section>
 </span>
 <Table shadow hoverable={true}>
-  <TableHeaders {headers} {context} />
-  <TableEntries bind:context/>
+  <TableHeaders {headers} bind:context />
+  <TableEntries bind:context />
 </Table>
-<CreateProjectModal {context} />
-<DeleteEntryModal {context} />
-
+<CreateAssignmentModal bind:context />
+<DeleteEntryModal bind:context />

@@ -7,7 +7,7 @@ import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMet
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
-const Fns: TableFns<LibraryMetadata, CreateLibraryData> = {
+const Fns: TableFns<LibraryMetadata, CreateLibraryData, string> = {
   createFn: (data, owner) => api.saveUserLibrary(owner, data),
   readFn: (owner) => api.listUserLibraries(owner),
   deleteFn: (entry) => api.deleteUserLibrary(entry.owner, entry.name),
@@ -17,7 +17,8 @@ const Fns: TableFns<LibraryMetadata, CreateLibraryData> = {
 
 export class LibraryTableContext extends GenericTableContext<
   LibraryMetadata,
-  CreateLibraryData
+  CreateLibraryData, 
+  string
 > {
   constructor(
     owner: string,
