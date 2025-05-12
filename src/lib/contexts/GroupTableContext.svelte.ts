@@ -1,11 +1,12 @@
 import { goto, invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableFns } from '$lib/utils/types';
+import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
 import type { CreateGroupData } from 'netsblox-cloud-client/src/types/CreateGroupData';
 import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
+import { errorSetContext } from './ErrorDialogContext.svelte';
 
 const Fns: TableFns<Group, CreateGroupData, string> = {
   createFn: (data, owner) => api.createGroup(owner, data),
@@ -21,6 +22,10 @@ const actions: TableEntryAction<Group, string>[] = [
   },
 ];
 
+const errors: TableErrors = {createErr: Error("Failed to create group"),
+                             readErr: Error("Failed to refresh group list"),
+                             deleteErr: Error("Failed to delete group(s)")}
+
 export class GroupTableContext extends GenericTableContext<
   Group,
   CreateGroupData,
@@ -33,7 +38,7 @@ export class GroupTableContext extends GenericTableContext<
     keys: (keyof Group)[],
     searchKey: StringKey<Group>,
   ) {
-    super(Fns, owner, groups, keys, searchKey);
+    super(Fns, errors, errorSetContext, owner, groups, keys, searchKey);
   }
 }
 const key = Symbol('GroupTable');

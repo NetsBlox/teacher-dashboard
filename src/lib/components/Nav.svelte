@@ -9,10 +9,11 @@
   import { goto, invalidate } from '$app/navigation';
 
   import { CLOUD_URL } from '$lib/utils/routes';
+  import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
 
   interface Props {
-    url: string | undefined;
-    authUser: string
+    url: string;
+    authUser: string;
   }
 
   let { url, authUser }: Props = $props();
@@ -20,23 +21,28 @@
   const loggedIn = $derived(authUser !== undefined);
 
   async function logout() {
-    await fetch(CLOUD_URL + '/users/logout', {
-      method: 'post',
-      credentials: 'include',
-    });
+    try {
+      const endpoint = CLOUD_URL + '/users/logout';
+      const options: RequestInit = { method: 'post', credentials: 'include' };
+      const res = await fetch(endpoint, options);
+      if (!res.ok) throw Error 
+    } catch(rawErr) {
+      const err = new Error('Failed to logout.');
+      errorSetContext.push(err);
+      throw rawErr
+    }
   }
 
   const handleLogout = async () => {
     await logout();
     await invalidate(CLOUD_URL + '/users/whoami');
     await goto('/');
-    console.log(authUser);
   };
 
   const handleClick = async () => {
     if (loggedIn) {
       await handleLogout();
-    } else if (url) {
+    } else {
       window.location.href = url;
     }
   };

@@ -1,7 +1,7 @@
 import { invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableFns } from '$lib/utils/types';
+import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
@@ -9,6 +9,7 @@ import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId'
 import type { CreateSubmissionData } from 'netsblox-cloud-client/src/types/CreateSubmissionData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { Submission } from 'netsblox-cloud-client/src/types/Submission';
+import { errorSetContext } from './ErrorDialogContext.svelte';
 
 export type SubmissionOwner = {
   groupId: GroupId;
@@ -31,6 +32,12 @@ const Fns: TableFns<Submission, CreateSubmissionData, SubmissionOwner> = {
         owner.assignmentId +
         '/submissions/',
     ),
+};
+
+const errors: TableErrors = {
+  createErr: Error('Failed to create submission'),
+  readErr: Error('Failed to get submission list'),
+  deleteErr: Error('Failed to delete submission'),
 };
 
 const actions: TableEntryAction<Submission, SubmissionOwner>[] = [
@@ -59,7 +66,7 @@ export class SubmissionTableContext extends GenericTableContext<
     keys: (keyof Submission)[],
     searchKey: StringKey<Submission>,
   ) {
-    super(Fns, owner, submissions, keys, searchKey);
+    super(Fns, errors, errorSetContext, owner, submissions, keys, searchKey);
   }
 }
 const key = Symbol('SubmissionTable');

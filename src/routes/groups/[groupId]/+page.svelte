@@ -19,5 +19,5 @@
     <AssignmentsTable {groupId} {assignments} />
 
   </TabItem>
-  <TabItem title="Services"></TabItem>
+  <!-- <TabItem title="Services"></TabItem> -->
 </Tabs>

@@ -1,11 +1,12 @@
-import { goto, invalidate } from '$app/navigation';
+import { invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableFns } from '$lib/utils/types';
+import type { StringKey, TableErrors, TableFns } from '$lib/utils/types';
 import type { CreateLibraryData } from 'netsblox-cloud-client/src/types/CreateLibraryData';
 import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMetadata';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
+import { errorSetContext } from './ErrorDialogContext.svelte';
 
 const Fns: TableFns<LibraryMetadata, CreateLibraryData, string> = {
   createFn: (data, owner) => api.saveUserLibrary(owner, data),
@@ -14,6 +15,10 @@ const Fns: TableFns<LibraryMetadata, CreateLibraryData, string> = {
   invalidateFn: (owner) =>
     invalidate(CLOUD_URL + '/libraries/user/' + owner + '/'),
 };
+
+const errors: TableErrors = {createErr: Error("Failed to import library"),
+                             readErr: Error("Failed to refresh library list"),
+                             deleteErr: Error("Failed to delete library(s)")}
 
 export class LibraryTableContext extends GenericTableContext<
   LibraryMetadata,
@@ -26,7 +31,7 @@ export class LibraryTableContext extends GenericTableContext<
     keys: (keyof LibraryMetadata)[],
     searchKey: StringKey<LibraryMetadata>,
   ) {
-    super(Fns, owner, libraries, keys, searchKey);
+    super(Fns, errors, errorSetContext, owner, libraries, keys, searchKey);
   }
 }
 const key = Symbol('LibraryTable');

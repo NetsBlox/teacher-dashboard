@@ -1,31 +1,28 @@
 <script lang="ts">
   import { Button, Modal, Hr, Label, Input } from 'flowbite-svelte';
-  import type { CreateLibraryData } from 'netsblox-cloud-client/src/types/CreateLibraryData';
+  import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
   import Dropzone from './Dropzone.svelte';
   import type { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
-  import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
   import { parseProject } from '$lib/utils/utils';
+  import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
 
   type Props = {
     context: ProjectOwnedTableContext;
   };
 
   let { context }: Props = $props();
-  let data: CreateProjectData = $state({
-    name: '',
-    roles: []
-  });
 
   let file: File | undefined = $state(undefined);
   let dragging = $state(false);
 
   const handleCreate = async () => {
     if (!file){
-      //FIXME: add error context and update it here
+      errorSetContext.push(Error("No file was uploaded"))
       return
     }
     const xml = await file.text()
-    const projectObj = parseProject(xml)
+    const data = await parseProject(xml)
+    await context.createEntry(data)
     
   }
 </script>

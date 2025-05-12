@@ -1,13 +1,14 @@
 import { goto, invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableFns } from '$lib/utils/types';
+import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
 import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
 import type { CreateAssignmentData } from 'netsblox-cloud-client/src/types/CreateAssignmentData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
+import { errorSetContext } from './ErrorDialogContext.svelte';
 
 const Fns: TableFns<Assignment, CreateAssignmentData, GroupId> = {
   createFn: (data, owner) => api.createAssignment(owner, data),
@@ -25,6 +26,12 @@ const actions: TableEntryAction<Assignment, GroupId>[] = [
   },
 ];
 
+const errors: TableErrors = {
+  createErr: Error('Failed to create assignment'),
+  readErr: Error('Failed to get assignment list'),
+  deleteErr: Error('Failed to delete assignment'),
+};
+
 export class AssignmentTableContext extends GenericTableContext<
   Assignment,
   CreateAssignmentData,
@@ -37,7 +44,7 @@ export class AssignmentTableContext extends GenericTableContext<
     keys: (keyof Assignment)[],
     searchKey: StringKey<Assignment>,
   ) {
-    super(Fns, owner, assignments, keys, searchKey);
+    super(Fns, errors, errorSetContext, owner, assignments, keys, searchKey);
   }
 }
 const key = Symbol('AssignmentTable');

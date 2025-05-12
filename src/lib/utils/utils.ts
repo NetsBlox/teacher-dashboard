@@ -1,5 +1,6 @@
 import type { RoleData } from 'netsblox-cloud-client/src/types/RoleData';
-import type { NetsbloxTime, ProjectObj } from './types';
+import type { FetchType, NetsbloxTime, ProjectObj } from './types';
+import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
 
 export class DataFileError extends Error {
   constructor(filename: string, inner: Error) {
@@ -12,6 +13,11 @@ export class NoFileContentsError extends Error {
   constructor() {
     super('Unable to read file.');
   }
+}
+
+export function toError(err: unknown): Error {
+  if (err instanceof Error) return err;
+  else return Error(err?.toString());
 }
 
 /**
@@ -60,12 +66,18 @@ export async function parseProject(xml: string): Promise<ProjectObj> {
   const parser = new DOMParser();
   const res = parser.parseFromString(xml, 'application/xml');
   if (res.querySelector('parsererror') !== null) {
-    throw Error('Failed to parse project');
+    const err = Error('Failed to parse project');
+    errorSetContext.push(err)
+    throw err
   }
 
   const room = res.documentElement;
   const name = room.getAttribute('name');
-  if (!name) throw Error('Failed to parse name from project file');
+  if (!name) {
+    const err = Error('Failed to parse name from project file');
+    errorSetContext.push(err)
+    throw err
+  }
 
   const rolePs = Array.from(room.children).map(parseRole);
   const roles = await Promise.all(rolePs);
@@ -75,10 +87,22 @@ export async function parseProject(xml: string): Promise<ProjectObj> {
 
 export async function parseRole(el: Element): Promise<RoleData> {
   const name = el.getAttribute('name');
-  if (!name) throw Error('Failed to parse role name');
+  if (!name) {
+    const err = Error('Failed to parse role name');
+    errorSetContext.push(err)
+    throw err
+  }
   const code = el.querySelector('role > project')?.outerHTML;
-  if (!code) throw Error('Failed to parse code from role');
+  if (!code) {
+    const err = Error('Failed to parse code from role');
+    errorSetContext.push(err)
+    throw err
+  }
   const media = el.querySelector('role > media')?.outerHTML;
-  if (!media) throw Error('Failed to parse media from role');
+  if (!media) {
+    const err = Error('Failed to parse media from role');
+    errorSetContext.push(err)
+    throw err
+  } 
   return { name, code, media };
 }

@@ -1,7 +1,14 @@
-import type { TableContext, TableFns, TableEntry, StringKey } from "$lib/utils/types";
+import type {
+  StringKey,
+  TableContext,
+  TableEntry,
+  TableErrors,
+  TableFns,
+} from '$lib/utils/types';
 
 export class GenericTableContext<T, CreateT, TOwner>
-implements TableContext<T, CreateT, TOwner> {
+  implements TableContext<T, CreateT, TOwner>
+{
   createOpen: boolean = $state(false);
   editOpen: boolean = $state(false);
   deleteOpen: boolean = $state(false);
@@ -21,15 +28,21 @@ implements TableContext<T, CreateT, TOwner> {
 
   private _search: string = $state('');
   private fns: TableFns<T, CreateT, TOwner>;
+  private errs: TableErrors;
+  private errSetContext: Error[];
 
   constructor(
     data: TableFns<T, CreateT, TOwner>,
+    errs: TableErrors,
+    errContext: Error[],
     owner: TOwner,
     values: T[],
     keys: (keyof T)[],
     searchKey: StringKey<T>,
   ) {
     this.fns = data;
+    this.errs = errs;
+    this.errSetContext = errContext;
     this.owner = owner;
     this.searchKey = searchKey;
     this.keys = keys;
@@ -44,10 +57,15 @@ implements TableContext<T, CreateT, TOwner> {
   }
 
   async refreshEntries() {
-    const values = await this.fns.readFn(this.owner);
-    this.entries = values.map((value) => {
-      return { selected: false, value: value, visible: true, expand: false };
-    });
+    try {
+      const values = await this.fns.readFn(this.owner);
+      this.entries = values.map((value) => {
+        return { selected: false, value: value, visible: true, expand: false };
+      });
+    } catch (err) {
+      this.errSetContext.push(this.errs.readErr);
+      throw err;
+    }
   }
 
   applyFilter() {
@@ -66,16 +84,27 @@ implements TableContext<T, CreateT, TOwner> {
       return filtered;
     }, new Array<Promise<T>>());
 
-    await Promise.all(promises);
-    this.refreshEntries();
-    this.fns.invalidateFn(this.owner);
+    Promise.all(promises)
+      .then(() => {
+        this.refreshEntries();
+        this.fns.invalidateFn(this.owner);
+      })
+      .catch((err) => {
+        this.errSetContext.push(this.errs.deleteErr);
+        throw err;
+      });
     this.deleteOpen = false;
   }
 
   async createEntry(data: CreateT) {
-    await this.fns.createFn(data, this.owner);
-    await this.fns.invalidateFn(this.owner);
-    await this.refreshEntries();
-    this.createOpen = false;
+    try {
+      this.createOpen = false;
+      await this.fns.createFn(data, this.owner);
+      await this.fns.invalidateFn(this.owner);
+      this.refreshEntries();
+    } catch (err) {
+      this.errSetContext.push(this.errs.createErr);
+      throw err;
+    }
   }
 }

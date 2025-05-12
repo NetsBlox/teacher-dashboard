@@ -11,9 +11,10 @@
   type Props = {
     projects: ProjectMetadata[];
     owner: string;
+    tableBtns: boolean;
   };
 
-  let { projects, owner}: Props = $props();
+  let { projects, owner, tableBtns }: Props = $props();
   const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
   const headers = ['name', 'owner'];
   let context = $state(new ProjectSharedTableContext(owner, projects, keys, 'name'));
@@ -28,6 +29,7 @@
     bind:inputValue={context.search}
   />
   <section>
+    {#if tableBtns}
     <Button outline on:click={() => (context.createOpen = true)}>
       <PlusOutline /> Import Project
     </Button>
@@ -39,6 +41,7 @@
     >
       <TrashBinOutline />Delete
     </Button>
+    {/if}
   </section>
 </span>
 <Table shadow hoverable={true}>

@@ -20,10 +20,10 @@
   <TabItem title="Projects">
     <Tabs tabStyle="underline">
       <TabItem open title="My Projects">
-        <ProjectTable {projects} {owner} />
+        <ProjectTable {projects} {owner} tableBtns={true} />
       </TabItem>
       <TabItem title="Collaborations">
-        <ProjectTable projects={shared} {owner} />
+        <ProjectTable projects={shared} {owner} tableBtns={false}/>
       </TabItem>
     </Tabs>
   </TabItem>

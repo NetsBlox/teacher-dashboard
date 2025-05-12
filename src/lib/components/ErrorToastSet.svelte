@@ -1,15 +1,26 @@
 <script lang="ts">
-  import { setErrorsContext } from '$lib/contexts/ErrorDialogContext.svelte';
+  import { errorSetContext as errors } from '$lib/contexts/ErrorDialogContext.svelte';
+  import { CloseCircleOutline } from 'flowbite-svelte-icons';
   import { Toast } from 'flowbite-svelte';
 
-  const errors: Error[] = $state([]);
-  errors.push(new Error('init'));
 </script>
-
+{#if (errors.length !== 0)}
 {#each errors as error, i}
-  {@debug i}
-  <Toast class={`border border-zinc-900 rounded-lg transform -translate-y-[${i}rem] `} position="bottom-right">
-    {error}
-    <button onclick={() => errors.push(Error('message'))}> test </button>
-  </Toast>
+  {@const dx = i * 3}
+  {@const dy = -i * 3}
+  {@const z = -i}
+      <Toast
+        style={`translate: ${dx}px ${dy}px; z-index: ${z}`}
+        class={`rounded-lg border-2 border-red-700 `}
+        contentClass="w-full text-sm font-semibold flex items-center justify-between m-1.5"
+        position="bottom-right"
+        dismissable={false}
+      >
+        {error}
+        <button
+          class="rounded font-medium text-orange-500 hover:text-orange-400 active:text-orange-500"
+          onclick={() => errors.shift()}><CloseCircleOutline /></button
+        >
+      </Toast>
 {/each}
+{/if}

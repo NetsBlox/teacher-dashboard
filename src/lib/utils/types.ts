@@ -1,14 +1,15 @@
+import type { RoleData } from "netsblox-cloud-client/src/types/RoleData";
+
+export type FetchType =  (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>
 export type NetsbloxTime = {
   secs_since_epoch: number;
   nanos_since_epoch: number;
 };
 
 export type ProjectObj = {
-  room: {
-    "@_name": string
-    role: Array<Object> | {role: Object}
-  }
-} & Record<string, unknown >
+  name: string
+  roles: RoleData[]
+}
 
 export type StringKey<T> = {
   [K in keyof T]: T[K] extends String ? K : never;
@@ -28,6 +29,12 @@ export interface TableFns<T, CreateT, TOwner> {
   readFn: (owner: TOwner) => Promise<T[]>;
   deleteFn: (entry: T, owner: TOwner) => Promise<T>;
   invalidateFn: (owner: TOwner) => Promise<void>;
+}
+
+export interface TableErrors {
+  createErr: Error
+  readErr: Error
+  deleteErr: Error
 }
 
 export interface TableContext<T, CreateT, TOwner> {
