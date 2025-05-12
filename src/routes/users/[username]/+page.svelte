@@ -6,11 +6,17 @@
   import LibraryTable from '$lib/components/LibraryTable.svelte';
 
   import type { PageProps } from './$types';
+  import { NavTitleText } from '$lib/contexts/Contexts.svelte';
 
   let { data }: PageProps = $props();
 
-  const { user, projects, shared, groups, libraries } = $derived(data);
-  const owner = $derived(user.username);
+  const { user, projects, shared, groups, libraries } = data;
+  let owner = $state('')
+  NavTitleText.value = 'User: '
+  if(user?.username){
+    owner = user?.username;
+    NavTitleText.value = `User: ${(() => owner)()}`
+  }
 </script>
 
 <Tabs>

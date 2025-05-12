@@ -4,7 +4,7 @@ import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import type { PageLoad } from './$types';
 import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
-import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 
 type Fetch = (
   input: RequestInfo | URL,
@@ -53,7 +53,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
     const [group, members, assignments] = await Promise.all([groupP, membersP, assignmentsP])
     return {group, members, assignments}
   } catch(rawErr) {
-    errorSetContext.push(new Error("Failed to get group data."))
-    return {group: [], members: [], assignments: []}
+    ErrorSetContext.push(new Error("Failed to get group data."))
+    return {group: undefined, members: [], assignments: []}
   }
 };

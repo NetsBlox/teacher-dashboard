@@ -9,7 +9,7 @@
   import { goto, invalidate } from '$app/navigation';
 
   import { CLOUD_URL } from '$lib/utils/routes';
-  import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+  import { ErrorSetContext, NavTitleText } from '$lib/contexts/Contexts.svelte';
 
   interface Props {
     url: string;
@@ -25,11 +25,11 @@
       const endpoint = CLOUD_URL + '/users/logout';
       const options: RequestInit = { method: 'post', credentials: 'include' };
       const res = await fetch(endpoint, options);
-      if (!res.ok) throw Error 
-    } catch(rawErr) {
+      if (!res.ok) throw Error;
+    } catch (rawErr) {
       const err = new Error('Failed to logout.');
-      errorSetContext.push(err);
-      throw rawErr
+      ErrorSetContext.push(err);
+      throw rawErr;
     }
   }
 
@@ -49,13 +49,17 @@
 </script>
 
 <Navbar fluid class="font-bold dark:bg-gray-800">
-  <NavBrand href="/">
-    <img
-      src="/src/assets/logo.svg"
-      class="me-3 h-9 sm:h-12"
-      alt="Netsblox Logo"
-    />
-  </NavBrand>
+  <div class="flex flex-row items-center">
+    <NavBrand href="/">
+      <img
+        src="/src/assets/logo.svg"
+        class="me-3 h-9 sm:h-12"
+        alt="Netsblox Logo"
+      />
+    </NavBrand>
+    <span class="text-xl"> {NavTitleText.value}</span>
+  </div>
+
   <NavHamburger />
   <NavUl>
     <NavLi href="/">Home</NavLi>

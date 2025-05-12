@@ -1,4 +1,4 @@
-import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 import { CLOUD_URL } from '$lib/utils/routes';
 import type { LayoutLoad } from './$types';
 
@@ -17,7 +17,7 @@ export const load: LayoutLoad = async ({ fetch }) => {
   try {
     return await whoami(fetch);
   } catch {
-    errorSetContext.push(new Error('Failed to reach cloud.'));
+    ErrorSetContext.push(new Error('Failed to reach cloud.'));
     return { authUser: undefined };
   }
 };

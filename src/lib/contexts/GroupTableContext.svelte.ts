@@ -6,7 +6,7 @@ import type { CreateGroupData } from 'netsblox-cloud-client/src/types/CreateGrou
 import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 
 const Fns: TableFns<Group, CreateGroupData, string> = {
   createFn: (data, owner) => api.createGroup(owner, data),
@@ -38,7 +38,7 @@ export class GroupTableContext extends GenericTableContext<
     keys: (keyof Group)[],
     searchKey: StringKey<Group>,
   ) {
-    super(Fns, errors, errorSetContext, owner, groups, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, groups, keys, searchKey);
   }
 }
 const key = Symbol('GroupTable');

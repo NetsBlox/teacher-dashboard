@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { errorSetContext as errors } from '$lib/contexts/ErrorDialogContext.svelte';
+  import { ErrorSetContext as errors } from '$lib/contexts/Contexts.svelte';
   import { CloseCircleOutline } from 'flowbite-svelte-icons';
   import { Toast } from 'flowbite-svelte';
 

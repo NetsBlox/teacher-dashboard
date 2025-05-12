@@ -1,6 +1,6 @@
 import type { RoleData } from 'netsblox-cloud-client/src/types/RoleData';
 import type { FetchType, NetsbloxTime, ProjectObj } from './types';
-import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 
 export class DataFileError extends Error {
   constructor(filename: string, inner: Error) {
@@ -67,7 +67,7 @@ export async function parseProject(xml: string): Promise<ProjectObj> {
   const res = parser.parseFromString(xml, 'application/xml');
   if (res.querySelector('parsererror') !== null) {
     const err = Error('Failed to parse project');
-    errorSetContext.push(err)
+    ErrorSetContext.push(err)
     throw err
   }
 
@@ -75,7 +75,7 @@ export async function parseProject(xml: string): Promise<ProjectObj> {
   const name = room.getAttribute('name');
   if (!name) {
     const err = Error('Failed to parse name from project file');
-    errorSetContext.push(err)
+    ErrorSetContext.push(err)
     throw err
   }
 
@@ -89,19 +89,19 @@ export async function parseRole(el: Element): Promise<RoleData> {
   const name = el.getAttribute('name');
   if (!name) {
     const err = Error('Failed to parse role name');
-    errorSetContext.push(err)
+    ErrorSetContext.push(err)
     throw err
   }
   const code = el.querySelector('role > project')?.outerHTML;
   if (!code) {
     const err = Error('Failed to parse code from role');
-    errorSetContext.push(err)
+    ErrorSetContext.push(err)
     throw err
   }
   const media = el.querySelector('role > media')?.outerHTML;
   if (!media) {
     const err = Error('Failed to parse media from role');
-    errorSetContext.push(err)
+    ErrorSetContext.push(err)
     throw err
   } 
   return { name, code, media };

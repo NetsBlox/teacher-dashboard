@@ -9,7 +9,7 @@ import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId'
 import type { CreateSubmissionData } from 'netsblox-cloud-client/src/types/CreateSubmissionData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { Submission } from 'netsblox-cloud-client/src/types/Submission';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 
 export type SubmissionOwner = {
   groupId: GroupId;
@@ -66,7 +66,7 @@ export class SubmissionTableContext extends GenericTableContext<
     keys: (keyof Submission)[],
     searchKey: StringKey<Submission>,
   ) {
-    super(Fns, errors, errorSetContext, owner, submissions, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, submissions, keys, searchKey);
   }
 }
 const key = Symbol('SubmissionTable');

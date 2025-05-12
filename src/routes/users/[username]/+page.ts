@@ -1,4 +1,4 @@
-import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 import { CLOUD_URL } from '$lib/utils/routes';
 import { RequestError } from 'netsblox-cloud-client/src/error';
 import type { Group } from 'netsblox-cloud-client/src/types/Group';
@@ -76,8 +76,8 @@ export const load: PageLoad = async ({ fetch, params }) => {
     return { user, projects, shared, libraries, groups };
   } catch (err) {
     const errEntry = new Error('Failed to load user data');
-    errorSetContext.push(errEntry);
+    ErrorSetContext.push(errEntry);
     console.error(err);
-    return { user: [], projects: [], shared: [], libraries: [], groups: [] };
+    return { user: null, projects: [], shared: [], libraries: [], groups: [] };
   }
 };

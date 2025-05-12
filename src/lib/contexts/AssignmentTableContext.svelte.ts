@@ -8,7 +8,7 @@ import { GenericTableContext } from './GenericTableContext.svelte';
 import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
 import type { CreateAssignmentData } from 'netsblox-cloud-client/src/types/CreateAssignmentData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 
 const Fns: TableFns<Assignment, CreateAssignmentData, GroupId> = {
   createFn: (data, owner) => api.createAssignment(owner, data),
@@ -44,7 +44,7 @@ export class AssignmentTableContext extends GenericTableContext<
     keys: (keyof Assignment)[],
     searchKey: StringKey<Assignment>,
   ) {
-    super(Fns, errors, errorSetContext, owner, assignments, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, assignments, keys, searchKey);
   }
 }
 const key = Symbol('AssignmentTable');

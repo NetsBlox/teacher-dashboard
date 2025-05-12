@@ -1,13 +1,13 @@
 import { invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
-import { CLOUD_URL } from '$lib/utils/routes';
+import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
 import { getContext, setContext } from 'svelte';
 
-import type { StringKey, TableErrors, TableFns } from '$lib/utils/types';
+import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
 import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
 import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
 import { GenericTableContext } from './GenericTableContext.svelte';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 
 const Fns: TableFns<ProjectMetadata, CreateProjectData, string> = {
   createFn: (data, _owner) => api.createProject(data),
@@ -21,18 +21,31 @@ const errors: TableErrors = {createErr: Error("Failed to import project"),
                              readErr: Error("Failed to refresh projects list"),
                              deleteErr: Error("Failed to delete project")}
 
+const actions: TableEntryAction<ProjectMetadata, string>[] = [
+  function open_project(entry, owner) {
+    window.open(
+      BROWSER_URL +
+        '/?action=present&Username=' +
+        encodeURIComponent(entry.value.owner) +
+        '&ProjectName=' +
+        encodeURIComponent(entry.value.name),
+    );
+  },
+];
+
 export class ProjectSharedTableContext extends GenericTableContext<
   ProjectMetadata,
   CreateProjectData,
   string
 > {
+  actions=actions
   constructor(
     owner: string,
     projects: ProjectMetadata[],
     keys: (keyof ProjectMetadata)[],
     searchKey: StringKey<ProjectMetadata>,
   ) {
-    super(Fns, errors, errorSetContext, owner, projects, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, projects, keys, searchKey);
   }
 }
 

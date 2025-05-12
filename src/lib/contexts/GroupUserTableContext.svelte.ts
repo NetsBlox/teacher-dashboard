@@ -11,7 +11,7 @@ import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import { getContext, setContext } from 'svelte';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
 export type BatchData = {
@@ -55,7 +55,7 @@ export class GroupUserTableContext extends GenericTableContext<
     keys: (keyof User)[],
     searchKey: StringKey<User>,
   ) {
-    super(Fns, errors, errorSetContext, groupId, users, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, groupId, users, keys, searchKey);
   }
 
   async batchCreateEntry(data: BatchData) {
@@ -79,7 +79,7 @@ export class GroupUserTableContext extends GenericTableContext<
     }
 
     if (errors.length > 0)
-      errorSetContext.push(
+      ErrorSetContext.push(
         new Error(`Failed to create ${errors.length} user(s)`),
       );
 
@@ -109,7 +109,7 @@ export class GroupUserTableContext extends GenericTableContext<
       }
     }
     if (errors.length > 0)
-      errorSetContext.push(
+      ErrorSetContext.push(
         new Error(`Failed to create ${errors.length} user(s)`),
       );
   }

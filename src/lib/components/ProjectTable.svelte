@@ -16,7 +16,7 @@
 
   let { projects, owner, tableBtns }: Props = $props();
   const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
-  const headers = ['name', 'owner'];
+  const headers = ['name', 'owner', 'actions'];
   let context = $state(new ProjectSharedTableContext(owner, projects, keys, 'name'));
 
 </script>

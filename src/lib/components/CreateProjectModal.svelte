@@ -4,7 +4,7 @@
   import Dropzone from './Dropzone.svelte';
   import type { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
   import { parseProject } from '$lib/utils/utils';
-  import { errorSetContext } from '$lib/contexts/ErrorDialogContext.svelte';
+  import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 
   type Props = {
     context: ProjectOwnedTableContext;
@@ -17,7 +17,7 @@
 
   const handleCreate = async () => {
     if (!file){
-      errorSetContext.push(Error("No file was uploaded"))
+      ErrorSetContext.push(Error("No file was uploaded"))
       return
     }
     const xml = await file.text()

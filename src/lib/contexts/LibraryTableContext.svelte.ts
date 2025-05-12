@@ -6,7 +6,7 @@ import type { CreateLibraryData } from 'netsblox-cloud-client/src/types/CreateLi
 import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMetadata';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
-import { errorSetContext } from './ErrorDialogContext.svelte';
+import { ErrorSetContext } from './Contexts.svelte';
 
 const Fns: TableFns<LibraryMetadata, CreateLibraryData, string> = {
   createFn: (data, owner) => api.saveUserLibrary(owner, data),
@@ -31,7 +31,7 @@ export class LibraryTableContext extends GenericTableContext<
     keys: (keyof LibraryMetadata)[],
     searchKey: StringKey<LibraryMetadata>,
   ) {
-    super(Fns, errors, errorSetContext, owner, libraries, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, libraries, keys, searchKey);
   }
 }
 const key = Symbol('LibraryTable');

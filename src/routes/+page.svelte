@@ -3,7 +3,9 @@
   import { page } from '$app/state';
   import { loginUrl } from '$lib/utils/routes';
   import { Button } from 'flowbite-svelte';
+  import { NavTitleText }from '$lib/contexts/Contexts.svelte'
 
+  NavTitleText.value = "Dashboard"
   const { data } = $props();
 
   const handleClick = () => {
