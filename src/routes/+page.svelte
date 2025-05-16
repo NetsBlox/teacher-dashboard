@@ -4,6 +4,7 @@
   import { loginUrl } from '$lib/utils/routes';
   import { Button } from 'flowbite-svelte';
   import { NavTitleText }from '$lib/contexts/Contexts.svelte'
+  import demo from "$assets/demo.webm"
 
   NavTitleText.value = "Dashboard"
   const { data } = $props();
@@ -26,7 +27,7 @@
   <!-- Image Grid Section -->
   <figure class="scale-85 pt-10 brightness-90">
     <video autoplay loop> 
-      <source src="src/assets/demo.webm" type="video/webm"/>
+      <source src={demo} type="video/webm"/>
       <track kind='captions' srclang="en" src='src/lib/utils/captions/landing.vtt' label="English"/>
     </video>
   </figure>
