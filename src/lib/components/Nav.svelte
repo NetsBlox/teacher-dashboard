@@ -11,6 +11,8 @@
   import { CLOUD_URL } from '$lib/utils/routes';
   import { ErrorSetContext, NavTitleText } from '$lib/contexts/Contexts.svelte';
 
+  import logo from "$assets/logo.svg"
+
   interface Props {
     url: string;
     authUser: string;
@@ -52,7 +54,7 @@
   <div class="flex flex-row items-center">
     <NavBrand href="/">
       <img
-        src="/src/assets/logo.svg"
+        src={logo}
         class="me-3 h-9 sm:h-12"
         alt="Netsblox Logo"
       />

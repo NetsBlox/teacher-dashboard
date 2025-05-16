@@ -1,4 +1,5 @@
 <script lang="ts">
+  import john from "$assets/john.svg"
 </script>
 
 <!-- Text Section -->
@@ -9,6 +10,6 @@
     Oops! Something went wrong!
   </span>
   <!-- Image Grid Section -->
-  <img src="/src/assets/john.svg" alt="lost john travolta" width="500" />
+  <img src={john} alt="lost john travolta" width="500" />
 </section>
 <section class="flex flex-row justify-center"></section>
