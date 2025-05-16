@@ -1,7 +1,12 @@
 import { invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
+import type {
+  StringKey,
+  TableEntryAction,
+  TableErrors,
+  TableFns,
+} from '$lib/utils/types';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
@@ -41,16 +46,18 @@ const errors: TableErrors = {
 };
 
 const actions: TableEntryAction<Submission, SubmissionOwner>[] = [
-  function open_submission(entry, owner) {
-    window.open(
-      BROWSER_URL +
-        '/?action=review&groupId=' +
-        encodeURIComponent(owner.groupId) +
-        '&assignmentId=' +
-        encodeURIComponent(entry.value.assignmentId) +
-        '&submissionId=' +
-        encodeURIComponent(entry.value.id),
-    );
+  {
+    name: 'Open',
+    func: (entry, owner) =>
+      window.open(
+        BROWSER_URL +
+          '/?action=review&groupId=' +
+          encodeURIComponent(owner.groupId) +
+          '&assignmentId=' +
+          encodeURIComponent(entry.value.assignmentId) +
+          '&submissionId=' +
+          encodeURIComponent(entry.value.id),
+      ),
   },
 ];
 

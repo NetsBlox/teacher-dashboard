@@ -28,15 +28,10 @@ const errors: TableErrors = {
 };
 
 const actions: TableEntryAction<ProjectMetadata, string>[] = [
-  function open_project(entry, owner) {
-    window.open(
-      BROWSER_URL +
-        '/?action=present&Username=' +
-        encodeURIComponent(owner) +
-        '&ProjectName=' +
-        encodeURIComponent(entry.value.name),
-    );
-  },
+  {
+  name: "Open",
+  func: (entry, owner) => window.open( `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(owner)}&ProjectName=${encodeURIComponent(entry.value.name)}`)
+  }
 ];
 
 export class ProjectOwnedTableContext extends GenericTableContext<

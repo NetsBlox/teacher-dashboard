@@ -1,7 +1,12 @@
 import { goto, invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
 import { CLOUD_URL } from '$lib/utils/routes';
-import type { StringKey, TableEntryAction, TableErrors, TableFns } from '$lib/utils/types';
+import type {
+  StringKey,
+  TableEntryAction,
+  TableErrors,
+  TableFns,
+} from '$lib/utils/types';
 import { getContext, setContext } from 'svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
@@ -19,10 +24,9 @@ const Fns: TableFns<Assignment, CreateAssignmentData, GroupId> = {
 };
 
 const actions: TableEntryAction<Assignment, GroupId>[] = [
-  function view_submissions(entry) {
-    goto(
-      '/groups/' + entry.value.groupId + '/assignments/' + entry.value.id + '/',
-    );
+  {
+    name: 'View',
+    func: (entry) => goto(`/groups/${entry.value.groupId}/assignments/${entry.value.id}/`),
   },
 ];
 
