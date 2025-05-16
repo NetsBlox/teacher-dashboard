@@ -1,7 +1,6 @@
 <script lang="ts" generics="T, CreateT, TOwner">
   import { type TableContext } from '$lib/utils/types';
   import { isNetsbloxTime } from '$lib/utils/validators';
-  import { capitalize } from '$lib/utils/utils';
   import {
     TableBody,
     TableBodyRow,
@@ -42,8 +41,8 @@
                 <Button
                   outline
                   color="primary"
-                  onclick={(_e: MouseEvent) => action(entry, context.owner)}
-                  >{capitalize(action.name)}</Button
+                  onclick={(_e: MouseEvent) => action.func(entry, context.owner)}
+                  >{action.name}</Button
                 >
               {/each}
             </ButtonGroup>

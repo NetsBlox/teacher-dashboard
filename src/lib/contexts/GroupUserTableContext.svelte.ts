@@ -32,8 +32,9 @@ const Fns: TableFns<User, NewUser, GroupId> = {
 };
 
 const actions: TableEntryAction<User, GroupId>[] = [
-  function view(entry) {
-    goto('/users/' + entry.value.username + '/');
+  {
+    name: 'View',
+    func: (entry) => goto('/users/' + entry.value.username + '/'),
   },
 ];
 

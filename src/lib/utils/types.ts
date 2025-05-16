@@ -22,7 +22,7 @@ export type TableEntry<T> = {
   expand: boolean;
 };
 
-export type TableEntryAction<T, TOwner> = (entry: TableEntry<T>, owner: TOwner) => void;
+export type TableEntryAction<T, TOwner> = {name: string, func: (entry: TableEntry<T>, owner: TOwner) => void};
 
 export interface TableFns<T, CreateT, TOwner> {
   createFn: (data: CreateT, owner: TOwner) => Promise<T>;

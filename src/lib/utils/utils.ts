@@ -40,14 +40,6 @@ export function createNetsbloxTime(date: Date, time: string): NetsbloxTime {
   };
 }
 
-/**
- * remove underscores and capitalize all letters preceeded by whitespace
- **/
-export function capitalize(str: String): String {
-  const regExp = /(?:^|\s)(\ISC-V, w)/g; // capture all letters that proceed the beginning or a white space character. The ?: defines a non-capturing group
-  return str.replace('_', ' ').replaceAll(regExp, (l) => l.toLocaleUpperCase());
-}
-
 export async function readFile(file: File): Promise<string> {
   return new Promise((res, rej) => {
     const reader = new FileReader();
