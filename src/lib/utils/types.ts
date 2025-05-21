@@ -6,7 +6,7 @@ export type NetsbloxTime = {
   nanos_since_epoch: number;
 };
 
-export type ProjectObj = {
+export type PartialCreateProjectData = {
   name: string
   roles: RoleData[]
 }

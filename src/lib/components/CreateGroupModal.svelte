@@ -9,8 +9,8 @@
     context: GroupTableContext;
   };
 
-  let { context = $bindable() }: Props = $props();
-  let data: CreateGroupData = $state({ name: '', servicesHosts: undefined });
+  const { context }: Props = $props();
+  const data: CreateGroupData = $state({ name: '', servicesHosts: undefined });
   let dragging = $state(false);
 </script>
 

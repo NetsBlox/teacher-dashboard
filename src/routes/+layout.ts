@@ -10,7 +10,7 @@ async function whoami(fetch: any) {
     return { authUser: await response.text() };
   } else if (response.status === 403) {
     return { authUser: undefined };
-  } else throw Error;
+  } else throw null;
 }
 
 export const load: LayoutLoad = async ({ fetch }) => {

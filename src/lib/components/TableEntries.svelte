@@ -11,11 +11,10 @@
   } from 'flowbite-svelte';
 
   type Props = {
-    context: TableContext<T, CreateT, TOwner>; 
+    context: TableContext<T, CreateT, TOwner>;
   };
 
-  let { context = $bindable() }: Props = $props();
-
+  let { context }: Props = $props();
 </script>
 
 <TableBody tableBodyClass="divide-y">
@@ -41,8 +40,8 @@
                 <Button
                   outline
                   color="primary"
-                  onclick={(_e: MouseEvent) => action.func(entry, context.owner)}
-                  >{action.name}</Button
+                  onclick={(_e: MouseEvent) =>
+                    action.func(entry, context.owner)}>{action.name}</Button
                 >
               {/each}
             </ButtonGroup>

@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import { loginUrl } from '$lib/utils/routes';
   import { Button } from 'flowbite-svelte';
@@ -7,11 +6,9 @@
   import demo from "$assets/demo.webm"
 
   NavTitleText.value = "Dashboard"
-  const { data } = $props();
 
   const handleClick = () => {
-    if (data.authUser) goto('/users/' + data.authUser);
-    else window.location.href = loginUrl(page.url);
+    window.location.href = loginUrl(page.url);
   };
 </script>
 
@@ -26,7 +23,7 @@
   </span>
   <!-- Image Grid Section -->
   <figure class="scale-85 pt-10 brightness-90">
-    <video autoplay loop> 
+    <video autoplay loop width={2000}> 
       <source src={demo} type="video/webm"/>
       <track kind='captions' srclang="en" src='src/lib/utils/captions/landing.vtt' label="English"/>
     </video>

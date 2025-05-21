@@ -1,13 +1,13 @@
-<script lang="ts" generics="T">
+<script lang="ts" generics="T, CreateT, TOwner">
   import { TableHead, TableHeadCell, Checkbox } from 'flowbite-svelte';
-  import type { TableContext, TableEntry } from '$lib/utils/types';
+  import type { TableContext } from '$lib/utils/types';
 
   type Props = {
-    context: TableContext<T>;
+    context: TableContext<T, CreateT, TOwner>;
     headers: string[];
   };
 
-  let { headers, context = $bindable() }: Props = $props();
+  const { headers, context }: Props = $props();
   let checkAll = $state(false);
 
   const onCheckAll = (value: boolean) => {

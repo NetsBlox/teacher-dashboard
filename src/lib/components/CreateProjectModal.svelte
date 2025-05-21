@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Button, Modal, Hr, Label, Input } from 'flowbite-svelte';
-  import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
+  import { Button, Modal, Hr, Label } from 'flowbite-svelte';
   import Dropzone from './Dropzone.svelte';
   import type { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
   import { parseProject } from '$lib/utils/utils';
@@ -10,8 +9,7 @@
     context: ProjectOwnedTableContext;
   };
 
-  let { context }: Props = $props();
-
+  const { context }: Props = $props();
   let file: File | undefined = $state(undefined);
   let dragging = $state(false);
 
@@ -23,7 +21,6 @@
     const xml = await file.text()
     const data = await parseProject(xml)
     await context.createEntry(data)
-    
   }
 </script>
 

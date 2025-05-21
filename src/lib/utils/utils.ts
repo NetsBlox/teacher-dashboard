@@ -1,5 +1,5 @@
 import type { RoleData } from 'netsblox-cloud-client/src/types/RoleData';
-import type { FetchType, NetsbloxTime, ProjectObj } from './types';
+import type { NetsbloxTime, PartialCreateProjectData } from './types';
 import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 
 export class DataFileError extends Error {
@@ -19,6 +19,17 @@ export function toError(err: unknown): Error {
   if (err instanceof Error) return err;
   else return Error(err?.toString());
 }
+
+export async function parseCreateUserCSV(file: File): Promise<string[][]> {
+  const headers = ['username', 'email', 'password']
+  if(file.type !== 'text/csv') throw new Error('File must be a CSV')
+  const array = (await file.text()).split('\n').map((row) => row.split(',')).slice(0, -1);
+  if(array[0].length !== 3) throw new Error('Headers (username, email, password) missing')
+  if(array[0].some((item, i) => item !== headers[i])) throw new Error('Headers (username, email, password) missing')
+  array.forEach((arr, i) => {if(arr.length !== 3) throw new Error(`CSV malformed at row: ${i}`) })
+  return array.slice(1)
+}
+
 
 /**
 Create a time object format that the cloud expects. 
@@ -54,7 +65,7 @@ export async function readFile(file: File): Promise<string> {
   });
 }
 
-export async function parseProject(xml: string): Promise<ProjectObj> {
+export async function parseProject(xml: string): Promise<PartialCreateProjectData> {
   const parser = new DOMParser();
   const res = parser.parseFromString(xml, 'application/xml');
   if (res.querySelector('parsererror') !== null) {

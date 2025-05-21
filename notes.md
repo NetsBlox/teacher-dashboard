@@ -4,10 +4,15 @@
 
 ### Add api keys to Dashboard, Service Settings field in user and group
 
-### Grading, show all students for a specific assignment
-- make it like gradescope, plus more.
+### Add help for csv option for group 
 
-### Submitting projects, look for Brians old stuff on submitting projects, or auto graded results to dashboard.
+### bug: After delete prompt, project tab loads collaborator in owned projects
 
-### csv upload for student account creation
+### fix: Error messages are underneath the tables 
 
+### fix: Open project not in presenter mode
+
+### fix: Look for more strange bugs
+
+### fix: Delete prompt wording is wrong
+- feat: maybe show what is being deleted

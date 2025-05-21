@@ -7,6 +7,7 @@ import type {
   TableErrors,
   TableFns,
 } from '$lib/utils/types';
+import { parseCreateUserCSV } from '$lib/utils/utils';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
 import type { User } from 'netsblox-cloud-client/src/types/User';
@@ -94,27 +95,28 @@ export class GroupUserTableContext extends GenericTableContext<
   }
 
   async createFromCSV(file: File) {
-    let csv = (await file.text()).split('\n').map((row) => row.split(','));
-    const promises = csv.map(async ([username, email, password]) => {
-      if (username && email && password) {
-        const userData: NewUser = { username, email, password };
-        await this.createEntry(userData); // GroupId is added internally
+    const array = await parseCreateUserCSV(file);
+    const promises = array.map(async ([username, email, password]) => {
+      const userData: NewUser = { username, email, password };
+      try {
+        await this.createEntry(userData, false);
+      } catch (_) {
+        return username;
       }
     });
-    const errors: Error[] = [];
-    for (const promise of promises) {
-      try {
-        await promise;
-      } catch (err) {
-        if (err instanceof Error) errors.push(err);
+    const failedNames = (await Promise.all(promises)).filter((name) => name);
+    if (failedNames.length > 0) {
+      let preview = failedNames.slice(0, 3).join(', ');
+      if (failedNames.length > 3) {
+        preview += ` and ${failedNames.length - 3} more`;
       }
+      ErrorSetContext.push(new Error(`Failed to create users: ${preview} `));
+      console.error('Failed to create the following: ');
+      console.error(failedNames);
     }
-    if (errors.length > 0)
-      ErrorSetContext.push(
-        new Error(`Failed to create ${errors.length} user(s)`),
-      );
   }
 }
+
 const key = Symbol('GroupUserContext');
 
 export function setGroupUserTableContext(value: GroupUserTableContext) {
