@@ -69,7 +69,7 @@ export class GroupUserTableContext extends GenericTableContext<
       const username = data.prefix + String(number).padStart(4, '0');
       const password = Math.random().toString(36).slice(-8);
       const userData: NewUser = { username, email: data.email, password };
-      await this.createEntry(userData); // GroupId is added internally
+      await this.createEntry(userData, false); // GroupId is added internally
       return { username, password };
     });
     for (const promise of promises) {
