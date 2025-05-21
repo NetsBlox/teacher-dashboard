@@ -17,9 +17,7 @@
 
   const headers = ['name', 'owner'];
   const keys: (keyof LibraryMetadata)[] = ['name', 'owner'];
-  const context = $state(
-    new LibraryTableContext(owner, libraries, keys, 'name'),
-  );
+  const context = new LibraryTableContext(owner, libraries, keys, 'name');
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -49,4 +47,4 @@
 </Table>
 
 <CreateLibraryModal {context} />
-<DeleteEntryModal {context} />
+<DeleteEntryModal {context} label="Libraries"/>

@@ -15,6 +15,7 @@
   import { ClockOutline } from 'flowbite-svelte-icons';
   import type { ComponentType } from 'svelte';
   import { createNetsbloxTime } from '$lib/utils/utils';
+  import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
   // FIXME: when flowbite-svelte and flowbite-svelte-icons catches up with svelte
   const RectifiedClockOutline = ClockOutline as unknown as ComponentType;
 
@@ -22,16 +23,17 @@
     context: AssignmentTableContext;
   };
 
-  let { context = $bindable() }: Props = $props();
+  const { context }: Props = $props();
 
   let dragging = $state(false);
-  let rawData = $state({ name: '', date: new Date(), time: '23:59' });
+  const rawData = $state({ name: '', date: new Date(), time: '23:59' });
 
   const handleClick = () => {
     if(!RegExp(/\d{2}:\d{2}/).test(rawData.time)){
-      return console.log('error');
+      ErrorSetContext.push(Error("Failed to parse time"));
+      return;
     }
-    let data: CreateAssignmentData = {
+    const data: CreateAssignmentData = {
       name: rawData.name,
       dueDate: createNetsbloxTime(rawData.date, rawData.time),
     };

@@ -1,7 +1,7 @@
 import type { NetsbloxTime } from "./types";
-import type { ProjectObj } from "./types";
+import type { PartialCreateProjectData } from "./types";
 
-export function isProjectObj(value: unknown): value is ProjectObj {
+export function isProjectObj(value: unknown): value is PartialCreateProjectData {
     return Boolean(
         value &&
         typeof value === 'object' &&

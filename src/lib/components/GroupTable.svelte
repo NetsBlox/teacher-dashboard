@@ -13,10 +13,10 @@
     groups: Group[];
   };
 
-  let { groups, owner }: Props = $props();
+  const { groups, owner }: Props = $props();
   const keys: (keyof Group)[] = ['name', 'owner'];
   const headers = ['name', 'owner', 'actions'];
-  let context = $state(new GroupTableContext(owner, groups, keys, 'name'));
+  const context = new GroupTableContext(owner, groups, keys, 'name');
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -41,8 +41,8 @@
   </section>
 </span>
 <Table shadow hoverable={true}>
-  <TableHeaders {headers} bind:context />
-  <TableEntries bind:context />
+  <TableHeaders {headers} {context} />
+  <TableEntries {context} />
 </Table>
-<CreateGroupModal bind:context />
-<DeleteEntryModal bind:context />
+<CreateGroupModal {context} />
+<DeleteEntryModal {context} label="Groups"/>

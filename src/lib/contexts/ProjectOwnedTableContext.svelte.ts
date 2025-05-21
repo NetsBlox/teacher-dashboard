@@ -4,6 +4,7 @@ import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
 import { getContext, setContext } from 'svelte';
 
 import type {
+    PartialCreateProjectData,
   StringKey,
   TableEntryAction,
   TableErrors,
@@ -15,7 +16,7 @@ import { ErrorSetContext } from './Contexts.svelte';
 import { GenericTableContext } from './GenericTableContext.svelte';
 
 const Fns: TableFns<ProjectMetadata, CreateProjectData, string> = {
-  createFn: (data, owner) => api.createProject({ owner: owner, ...data }),
+  createFn: (data, owner) => api.createProject({ owner: owner, saveState: "Saved", ...data }),
   readFn: (owner) => api.listUserProjects(owner),
   deleteFn: (entry) => api.deleteProject(entry.id),
   invalidateFn: (owner) => invalidate(CLOUD_URL + '/projects/user/' + owner),
@@ -36,17 +37,17 @@ const actions: TableEntryAction<ProjectMetadata, string>[] = [
 
 export class ProjectOwnedTableContext extends GenericTableContext<
   ProjectMetadata,
-  CreateProjectData,
+  PartialCreateProjectData,
   string
 > {
   actions=actions
   constructor(
     owner: string,
-    groups: ProjectMetadata[],
+    projects: ProjectMetadata[],
     keys: (keyof ProjectMetadata)[],
     searchKey: StringKey<ProjectMetadata>,
   ) {
-    super(Fns, errors, ErrorSetContext, owner, groups, keys, searchKey);
+    super(Fns, errors, ErrorSetContext, owner, projects, keys, searchKey);
   }
 }
 

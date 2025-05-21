@@ -18,7 +18,7 @@
   let { members, groupId }: Props = $props();
   const keys: (keyof User)[] = ['username', 'email' ];
   const headers = ['username', 'email', 'actions'];
-  let context = $state(new GroupUserTableContext(groupId, members, keys, 'username'));
+  const context = new GroupUserTableContext(groupId, members, keys, 'username');
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -43,8 +43,8 @@
   </section>
 </span>
 <Table shadow hoverable={true}>
-  <TableHeaders {headers} bind:context />
-  <TableEntries bind:context />
+  <TableHeaders {headers} {context} />
+  <TableEntries {context} />
 </Table>
-<CreateUserModal bind:context />
-<DeleteEntryModal bind:context />
+<CreateUserModal {context} />
+<DeleteEntryModal {context} label="Users"/>

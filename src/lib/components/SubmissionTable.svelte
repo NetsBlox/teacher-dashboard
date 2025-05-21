@@ -3,11 +3,10 @@
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from './TableHeaders.svelte';
   import TableEntries from './TableEntries.svelte';
-  import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import { TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
   import { SubmissionTableContext, type SubmissionOwner } from '$lib/contexts/SubmissionTableContext.svelte';
   import type { Submission } from 'netsblox-cloud-client/src/types/Submission';
-  import CreateAssignmentModal from './CreateAssignmentModal.svelte';
   import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
   import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId';
 
@@ -22,7 +21,7 @@
   const keys: (keyof Submission)[] = ['owner', 'originTime'];
   const headers = ['name', 'origin time', 'actions'];
   const owner: SubmissionOwner = {groupId, assignmentId}
-  let context = $state(new SubmissionTableContext(owner, submissions, keys, 'owner'));
+  const context = new SubmissionTableContext(owner, submissions, keys, 'owner');
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -44,7 +43,7 @@
   </section>
 </span>
 <Table shadow hoverable={true}>
-  <TableHeaders {headers} bind:context />
-  <TableEntries bind:context />
+  <TableHeaders {headers} {context} />
+  <TableEntries {context} />
 </Table>
-<DeleteEntryModal bind:context />
+<DeleteEntryModal {context} label="Submissions"/>

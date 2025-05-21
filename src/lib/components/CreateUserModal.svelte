@@ -9,6 +9,7 @@
     Input,
     TabItem,
     Tabs,
+    Popover,
   } from 'flowbite-svelte';
   import type {
     BatchData,
@@ -16,17 +17,25 @@
   } from '$lib/contexts/GroupUserTableContext.svelte';
   import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
   import Dropzone from './Dropzone.svelte';
+  import {
+    QuestionCircleOutline,
+    QuestionCircleSolid,
+  } from 'flowbite-svelte-icons';
 
   type Props = {
     context: GroupUserTableContext;
   };
 
-  let { context = $bindable() }: Props = $props();
+  const { context }: Props = $props();
 
-  let singleState: NewUser = $state({ username: '', email: '', password: '' });
-  let multiState = $state({ prefix: '', email: '', batchNumber: '2' });
+  const singleState: NewUser = $state({
+    username: '',
+    email: '',
+    password: '',
+  });
+  const multiState = $state({ prefix: '', email: '', batchNumber: '2' });
+  const logState = $state({ open: false, href: '' });
   let file: File | undefined = $state();
-  let logState = $state({ open: false, href: '' });
 
   let dragging = $state(false);
   let singleTab = $state(true);
@@ -46,7 +55,7 @@
       logState.href = encodeURI(exportData);
       logState.open = true;
     } else if (fileTab && file) {
-        await context.createFromCSV(file)
+      await context.createFromCSV(file);
     }
   }
 </script>
@@ -105,6 +114,16 @@
         defaultClass="text-lg font-semibold"
         divClass="flex flex-col "
       >
+        <Label class="flex flex-row gap-1 pb-2"
+          >File:
+          <QuestionCircleOutline />
+          <Popover title="Hint"
+            ><p>
+              Ensure that the file has three columns in the following order:
+            </p>
+            <p>username, email, password</p>
+          </Popover>
+        </Label>
         <Dropzone bind:file {dragging} acceptType=".csv" />
       </TabItem>
     </Tabs>

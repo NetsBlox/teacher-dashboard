@@ -1,6 +1,5 @@
 
 <script lang="ts">
-  import type { User } from 'netsblox-cloud-client/src/types/User';
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from './TableHeaders.svelte';
   import TableEntries from './TableEntries.svelte';
@@ -16,10 +15,10 @@
     assignments: Assignment[];
   };
 
-  let { assignments, groupId }: Props = $props();
+  const { assignments, groupId }: Props = $props();
   const keys: (keyof Assignment)[] = ['name', 'originTime', 'dueDate'];
   const headers = ['name', 'origin time', 'due date', 'actions'];
-  let context = $state(new AssignmentTableContext(groupId, assignments, keys, 'name'));
+  const context = new AssignmentTableContext(groupId, assignments, keys, 'name');
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -44,8 +43,8 @@
   </section>
 </span>
 <Table shadow hoverable={true}>
-  <TableHeaders {headers} bind:context />
-  <TableEntries bind:context />
+  <TableHeaders {headers} {context} />
+  <TableEntries {context} />
 </Table>
-<CreateAssignmentModal bind:context />
-<DeleteEntryModal bind:context />
+<CreateAssignmentModal {context} />
+<DeleteEntryModal {context} label="Assignments"/>

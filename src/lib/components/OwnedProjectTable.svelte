@@ -5,19 +5,18 @@
   import TableEntries from './TableEntries.svelte';
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
-  import { ProjectSharedTableContext } from '$lib/contexts/ProjectSharedTableContext.svelte';
   import CreateProjectModal from './CreateProjectModal.svelte';
+  import { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
 
   type Props = {
     projects: ProjectMetadata[];
     owner: string;
-    tableBtns: boolean;
   };
 
-  let { projects, owner, tableBtns }: Props = $props();
+  let { projects, owner }: Props = $props();
   const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
   const headers = ['name', 'owner', 'actions'];
-  let context = $state(new ProjectSharedTableContext(owner, projects, keys, 'name'));
+  const context = new ProjectOwnedTableContext(owner, projects, keys, 'name');
 
 </script>
 
@@ -29,7 +28,6 @@
     bind:inputValue={context.search}
   />
   <section>
-    {#if tableBtns}
     <Button outline on:click={() => (context.createOpen = true)}>
       <PlusOutline /> Import Project
     </Button>
@@ -41,13 +39,12 @@
     >
       <TrashBinOutline />Delete
     </Button>
-    {/if}
   </section>
 </span>
 <Table shadow hoverable={true}>
   <TableHeaders {headers} {context} />
-  <TableEntries bind:context/>
+  <TableEntries {context}/>
 </Table>
 <CreateProjectModal {context} />
-<DeleteEntryModal {context} />
+<DeleteEntryModal {context} label="Projects"/>
 

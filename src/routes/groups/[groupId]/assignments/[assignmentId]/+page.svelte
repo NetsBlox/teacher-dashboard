@@ -4,13 +4,10 @@
   import { NavTitleText } from '$lib/contexts/Contexts.svelte.js';
   let { data } = $props();
 
-  let {assignment, submissions, groupId, assignmentId } = data;
-  NavTitleText.value = 'Assignment: '
-  if(assignment && assignment.name) {
-    NavTitleText.value = `Assignment: ${assignment.name}`
-  }
-  
-</script>
+  let {assignment, submissions, groupId, assignmentId } = $derived(data);
+  const getAssignmentName = () => assignment?.name || ''
+  NavTitleText.value = 'Assignment: ' + getAssignmentName()
+  </script>
 
 <Tabs >
   <TabItem open title="Submissions">

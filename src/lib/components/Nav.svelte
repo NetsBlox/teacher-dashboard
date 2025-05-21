@@ -57,6 +57,7 @@
         src={logo}
         class="me-3 h-9 sm:h-12"
         alt="Netsblox Logo"
+        width={48}
       />
     </NavBrand>
     <span class="text-xl"> {NavTitleText.value}</span>

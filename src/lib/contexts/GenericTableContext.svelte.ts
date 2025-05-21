@@ -96,14 +96,14 @@ export class GenericTableContext<T, CreateT, TOwner>
     this.deleteOpen = false;
   }
 
-  async createEntry(data: CreateT) {
+  async createEntry(data: CreateT, reportError: boolean = true) {
     try {
       this.createOpen = false;
       await this.fns.createFn(data, this.owner);
       await this.fns.invalidateFn(this.owner);
       this.refreshEntries();
     } catch (err) {
-      this.errSetContext.push(this.errs.createErr);
+      if(reportError) this.errSetContext.push(this.errs.createErr);
       throw err;
     }
   }

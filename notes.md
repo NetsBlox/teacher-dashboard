@@ -1,13 +1,12 @@
-
-### Message passing flag for groups. 
-- this requires cloud work. 
-
 ### Add api keys to Dashboard, Service Settings field in user and group
 
-### Grading, show all students for a specific assignment
-- make it like gradescope, plus more.
+### fix: Open project not in presenter mode
 
-### Submitting projects, look for Brians old stuff on submitting projects, or auto graded results to dashboard.
+### feat: Delete modal show what is being deleted
 
-### csv upload for student account creation
+### feat: Archiving groups
+
+### feat: upgrading, kicking out members
+
+### feat: gallery implementation
 

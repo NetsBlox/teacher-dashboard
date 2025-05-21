@@ -1,22 +1,22 @@
-<script lang="ts" generics="T, CreateT">
+<script lang="ts" generics="T, CreateT, TOwner">
   import { Button, Modal, Hr } from 'flowbite-svelte';
   import type { TableContext } from '$lib/utils/types';
-  import type { User } from 'netsblox-cloud-client/src/types/User';
 
   type Props = {
-    context: TableContext<T, CreateT>;
+    context: TableContext<T, CreateT, TOwner>;
+    label: String
   };
 
-  let { context = $bindable()}: Props = $props();
+  const { context , label}: Props = $props();
 </script>
 
 <Modal
   bind:open={context.deleteOpen}
-  title="Delete Selected Libraries?"
+  title={`Delete Selected ${label}?`}
   size="xs"
 >
   <form class="flex flex-col gap-2">
-    <h3>Warning! This cannot be undone. All libraries will be lost.</h3>
+    <h3>Warning! This cannot be undone. Selected {label} will be lost.</h3>
     <Hr />
     <span class="flex flex-row justify-between">
       <Button
