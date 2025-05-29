@@ -12,10 +12,10 @@
   let { data }: PageProps = $props();
 
   const { user, projects, shared, groups, libraries } = $derived(data);
-  const owner = $derived(user?.username || '')
-  const getOwner = () => owner
-  NavTitleText.value = `User: ${getOwner()}`; 
-</script>;
+  const owner = $derived(user?.username || '');
+  const getOwner = () => owner;
+  NavTitleText.value = `User: ${getOwner()}`;
+</script>
 
 <Tabs>
   <TabItem open title="Groups">
@@ -27,7 +27,7 @@
         <OwnedProjectTable {projects} {owner} />
       </TabItem>
       <TabItem title="Collaborations">
-        <SharedProjectTable projects={shared} {owner}/>
+        <SharedProjectTable projects={shared} {owner} />
       </TabItem>
     </Tabs>
   </TabItem>
