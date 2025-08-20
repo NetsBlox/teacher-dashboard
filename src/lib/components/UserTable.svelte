@@ -1,4 +1,3 @@
-
 <script lang="ts">
   import type { User } from 'netsblox-cloud-client/src/types/User';
   import { Table, TableSearch, Button } from 'flowbite-svelte';
@@ -6,19 +5,30 @@
   import TableEntries from './TableEntries.svelte';
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
-  import { GroupUserTableContext } from '$lib/contexts/GroupUserTableContext.svelte';
   import CreateUserModal from './CreateUserModal.svelte';
-
+  import { MemberTableContext } from '$lib/contexts/MembersTableContext.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
+  import type { Group } from 'netsblox-cloud-client/src/types/Group';
 
   type Props = {
-    groupId: string;
+    group: Group;
     members: User[];
   };
 
-  let { members, groupId }: Props = $props();
-  const keys: (keyof User)[] = ['username', 'email' ];
+  let { members, group }: Props = $props();
+  const keys: (keyof User)[] = ['username', 'email'];
   const headers = ['username', 'email', 'actions'];
-  const context = new GroupUserTableContext(groupId, members, keys, 'username');
+  const toaster = getErrorContext();
+  const context = new MemberTableContext(
+    group,
+    members,
+    keys,
+    'username',
+    toaster,
+  );
+
+  let creatorOpen = $state(false);
+  let deletorOpen = $state(false);
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -29,11 +39,11 @@
     bind:inputValue={context.search}
   />
   <section>
-    <Button outline on:click={() => (context.createOpen = true)}>
+    <Button outline on:click={() => (creatorOpen = true)}>
       <PlusOutline /> Add Members
     </Button>
     <Button
-      on:click={() => (context.deleteOpen = true)}
+      on:click={() => (deletorOpen = true)}
       disabled={!context.entries.some((x) => x.selected)}
       outline
       color="red"
@@ -46,5 +56,5 @@
   <TableHeaders {headers} {context} />
   <TableEntries {context} />
 </Table>
-<CreateUserModal {context} />
-<DeleteEntryModal {context} label="Users"/>
+<CreateUserModal {context} bind:open={creatorOpen} />
+<DeleteEntryModal {context} bind:open={deletorOpen} label="Users" />

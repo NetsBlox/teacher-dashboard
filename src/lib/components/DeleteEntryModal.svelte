@@ -1,20 +1,17 @@
-<script lang="ts" generics="T, CreateT, TOwner">
+<script lang="ts" generics="T">
+  import type { HasEntries, Deleteable } from '$lib/utils/tables.svelte';
   import { Button, Modal, Hr } from 'flowbite-svelte';
-  import type { TableContext } from '$lib/utils/types';
 
-  type Props = {
-    context: TableContext<T, CreateT, TOwner>;
-    label: String
-  };
+  interface Props {
+    context: HasEntries<T> & Deleteable;
+    label: String;
+    open: boolean;
+  }
 
-  const { context , label}: Props = $props();
+  let { context, label, open = $bindable()}: Props = $props();
 </script>
 
-<Modal
-  bind:open={context.deleteOpen}
-  title={`Delete Selected ${label}?`}
-  size="xs"
->
+<Modal bind:open title={`Delete Selected ${label}?`} size="xs">
   <form class="flex flex-col gap-2">
     <h3>Warning! This cannot be undone. Selected {label} will be lost.</h3>
     <Hr />
@@ -22,15 +19,14 @@
       <Button
         outline
         color="red"
-        onclick={() => context.deleteSelected()}
+        onclick={() => {
+          context.deleteSelected();
+          open = false;
+        }}
       >
         Confirm
       </Button>
-      <Button
-        outline
-        color="alternative"
-        onclick={() => (context.deleteOpen = false)}
-      >
+      <Button outline color="alternative" onclick={() => (open = false)}>
         Cancel
       </Button>
     </span>

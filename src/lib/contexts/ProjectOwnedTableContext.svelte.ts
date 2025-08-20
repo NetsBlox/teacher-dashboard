@@ -3,60 +3,111 @@ import api from '$lib/utils/api';
 import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
 import { getContext, setContext } from 'svelte';
 
+import { DashboardError } from '$lib/utils/errors';
 import type {
-    PartialCreateProjectData,
-  StringKey,
-  TableEntryAction,
-  TableErrors,
-  TableFns,
-} from '$lib/utils/types';
+  Deleteable,
+  HasEntries,
+  Searchable,
+  TableEntry,
+} from '$lib/utils/tables.svelte';
+import utils from '$lib/utils/tables.svelte';
+import type { StringKey } from '$lib/utils/types';
 import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
 import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
-import { ErrorSetContext } from './Contexts.svelte';
-import { GenericTableContext } from './GenericTableContext.svelte';
+import type { ErrorContext } from './ErrorContext.svelte';
 
-const Fns: TableFns<ProjectMetadata, CreateProjectData, string> = {
-  createFn: (data, owner) => api.createProject({ owner: owner, saveState: "Saved", ...data }),
-  readFn: (owner) => api.listUserProjects(owner),
-  deleteFn: (entry) => api.deleteProject(entry.id),
-  invalidateFn: (owner) => invalidate(CLOUD_URL + '/projects/user/' + owner),
-};
+type TableType = HasEntries<ProjectMetadata> &
+  Searchable<ProjectMetadata> &
+  Deleteable;
 
-const errors: TableErrors = {
-  createErr: Error('Failed to import project'),
-  readErr: Error('Failed to refresh projects list'),
-  deleteErr: Error('Failed to delete project'),
-};
+export class OwnedProjectTableContext implements TableType {
+  owner: string;
+  entries: TableEntry<ProjectMetadata>[] = $state([]);
 
-const actions: TableEntryAction<ProjectMetadata, string>[] = [
-  {
-  name: "Open",
-  func: (entry, owner) => window.open( `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(owner)}&ProjectName=${encodeURIComponent(entry.value.name)}`)
+  toaster: ErrorContext;
+
+  keys: (keyof ProjectMetadata)[];
+  searchKey: StringKey<ProjectMetadata>;
+  private _search: string = $state('');
+  get search() {
+    return this._search;
   }
-];
+  set search(value: string) {
+    this._search = value;
+    this.filter();
+  }
 
-export class ProjectOwnedTableContext extends GenericTableContext<
-  ProjectMetadata,
-  PartialCreateProjectData,
-  string
-> {
-  actions=actions
   constructor(
     owner: string,
     projects: ProjectMetadata[],
     keys: (keyof ProjectMetadata)[],
     searchKey: StringKey<ProjectMetadata>,
+    toaster: ErrorContext,
   ) {
-    super(Fns, errors, ErrorSetContext, owner, projects, keys, searchKey);
+    this.owner = owner;
+    this.entries = utils.initEntries(projects, this.createActions);
+    this.keys = keys;
+    this.searchKey = searchKey;
+    this.toaster = toaster;
   }
+
+  filter() {
+    utils.filter(this);
+  }
+
+  async refresh() {
+    try {
+      await invalidate(CLOUD_URL + '/projects/user/' + this.owner);
+      const projects = await api.listUserProjects(this.owner);
+      this.entries = utils.initEntries(projects, this.createActions);
+    } catch (_e) {
+      DashboardError.create('Failed to refresh entries').toast(
+        this.toaster,
+      );
+    }
+  }
+
+  async deleteSelected() {
+    const promises: Promise<ProjectMetadata>[] = [];
+    this.entries.forEach((entry) => {
+      if (entry.selected && entry.visible) {
+        promises.push(api.deleteProject(entry.value.id));
+      }
+    });
+    try {
+      await Promise.all(promises);
+      await this.refresh();
+    } catch (_e) {
+      DashboardError.create('Failed to delete all projects.').toast(
+        this.toaster,
+      );
+    }
+  }
+
+  async createProject(data: CreateProjectData) {
+    try {
+      await api.createProject({ ...data, saveState: 'Saved' });
+      await this.refresh();
+    } catch (_e) {
+      DashboardError.create('Failed to create project.').toast(
+        this.toaster,
+      );
+    }
+  }
+
+  private createActions = (value: ProjectMetadata) => {
+    const url = `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(this.owner)}&ProjectName=${encodeURIComponent(value.name)}`;
+    const Open = () => void window.open(url);
+    return [Open];
+  };
 }
 
-const key = Symbol('ProjectTable');
+const key = Symbol('OwnedProjectTable');
 
-export function setProjectTableContext(value: ProjectOwnedTableContext) {
+export function setOwnedProjectTableContext(value: OwnedProjectTableContext) {
   setContext(key, value);
 }
 
-export function getProjectTableContext() {
-  return getContext<ProjectOwnedTableContext>(key);
+export function getOwnedProjectTableContext() {
+  return getContext<OwnedProjectTableContext>(key);
 }

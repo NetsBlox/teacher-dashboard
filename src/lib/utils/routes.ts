@@ -3,13 +3,13 @@ export const BROWSER_URL = import.meta.env.VITE_BROWSER_URL;
 export const LOGIN_URL = import.meta.env.VITE_LOGIN_URL;
 
 export function loginUrl(redirectUrl: URL): string {
-    const loginBase: String = LOGIN_URL;
-    const cloudUrl: String = CLOUD_URL;
-    return `${loginBase}?redirect=${redirectUrl.toString()}&url=${cloudUrl}`;
+  const loginBase: String = LOGIN_URL;
+  const cloudUrl: String = CLOUD_URL;
+  return `${loginBase}?redirect=${redirectUrl.toString()}&url=${cloudUrl}`;
 }
 
 export function editorUrl(contentUrl: string): string {
-  const EDITOR_URL = "https://editor.netsblox.org";
+  const EDITOR_URL = 'https://editor.netsblox.org';
   return `${EDITOR_URL}?action=open&data=${encodeURIComponent(contentUrl)}`;
 }
 

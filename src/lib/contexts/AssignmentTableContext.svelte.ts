@@ -1,56 +1,98 @@
-import { goto, invalidate } from '$app/navigation';
-import api from '$lib/utils/api';
-import { CLOUD_URL } from '$lib/utils/routes';
+import { DashboardError } from '$lib/utils/errors';
 import type {
-  StringKey,
-  TableEntryAction,
-  TableErrors,
-  TableFns,
-} from '$lib/utils/types';
-import { getContext, setContext } from 'svelte';
-import { GenericTableContext } from './GenericTableContext.svelte';
-
+  Deleteable,
+  HasEntries,
+  Searchable,
+  TableEntry,
+} from '$lib/utils/tables.svelte';
+import utils from '$lib/utils/tables.svelte';
 import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
 import type { CreateAssignmentData } from 'netsblox-cloud-client/src/types/CreateAssignmentData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
-import { ErrorSetContext } from './Contexts.svelte';
+import type { StringKey } from '$lib/utils/types';
+import type { ErrorContext } from './ErrorContext.svelte';
+import { goto, invalidate } from '$app/navigation';
+import { getContext, setContext } from 'svelte';
+import api from '$lib/utils/api';
+import { CLOUD_URL } from '$lib/utils/routes';
 
-const Fns: TableFns<Assignment, CreateAssignmentData, GroupId> = {
-  createFn: (data, owner) => api.createAssignment(owner, data),
-  readFn: (owner) => api.listGroupAssignments(owner),
-  deleteFn: (entry) => api.deleteAssignment(entry.groupId, entry.id),
-  invalidateFn: (owner) =>
-    invalidate(CLOUD_URL + '/groups/id/' + owner + '/assignments/'),
-};
+type TableType = HasEntries<Assignment> & Searchable<Assignment> & Deleteable;
 
-const actions: TableEntryAction<Assignment, GroupId>[] = [
-  {
-    name: 'View',
-    func: (entry) => goto(`/groups/${entry.value.groupId}/assignments/${entry.value.id}/`),
-  },
-];
+export class AssignmentTableContext implements TableType {
+  owner: GroupId;
+  entries: TableEntry<Assignment>[] = $state([]);
 
-const errors: TableErrors = {
-  createErr: Error('Failed to create assignment'),
-  readErr: Error('Failed to get assignment list'),
-  deleteErr: Error('Failed to delete assignment'),
-};
+  toaster: ErrorContext;
 
-export class AssignmentTableContext extends GenericTableContext<
-  Assignment,
-  CreateAssignmentData,
-  GroupId
-> {
-  actions = actions;
+  keys: (keyof Assignment)[];
+  searchKey: StringKey<Assignment>;
+  private _search: string = $state('');
+  get search() {
+    return this._search;
+  }
+  set search(value: string) {
+    this._search = value;
+    this.filter();
+  }
+
   constructor(
     owner: string,
     assignments: Assignment[],
     keys: (keyof Assignment)[],
     searchKey: StringKey<Assignment>,
+    toaster: ErrorContext,
   ) {
-    super(Fns, errors, ErrorSetContext, owner, assignments, keys, searchKey);
+    this.owner = owner;
+    this.entries = utils.initEntries(assignments, this.createActions);
+    this.keys = keys;
+    this.searchKey = searchKey;
+    this.toaster = toaster;
   }
+
+  filter() {
+    utils.filter(this);
+  }
+
+  async refresh() {
+    try {
+      await invalidate(CLOUD_URL + '/groups/id/' + this.owner + '/assignments/')
+      const assignments = await api.listGroupAssignments(this.owner);
+      this.entries = utils.initEntries(assignments, this.createActions);
+    } catch (_e) {
+      DashboardError.create('Failed to refresh entries').toast(this.toaster);
+    }
+  }
+
+  async deleteSelected() {
+    const promises: Promise<Assignment>[] = [];
+    this.entries.forEach((entry) => {
+      if (entry.selected && entry.visible) {
+        promises.push(api.deleteAssignment(this.owner, entry.value.id));
+      }
+    });
+    try {
+      await Promise.all(promises);
+      await this.refresh();
+    } catch (_e) {
+      DashboardError.create('Failed to delete all assignments.').toast(this.toaster);
+    }
+  }
+
+  async createAssignment(data: CreateAssignmentData) {
+    try {
+      await api.createAssignment(this.owner, data);
+      await this.refresh();
+    } catch (_e) {
+      DashboardError.create('Failed to create assignment.').toast(this.toaster);
+    }
+  }
+
+  private createActions = (value: Assignment) => {
+    const View = () => goto(`/groups/${value.groupId}/assignments/${value.id}/`);
+    return [View];
+  };
 }
+
 const key = Symbol('AssignmentTable');
 
 export function setAssignmentTableContext(value: AssignmentTableContext) {

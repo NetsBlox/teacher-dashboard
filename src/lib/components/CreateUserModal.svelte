@@ -11,57 +11,53 @@
     Tabs,
     Popover,
   } from 'flowbite-svelte';
-  import type {
-    BatchData,
-    GroupUserTableContext,
-  } from '$lib/contexts/GroupUserTableContext.svelte';
   import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
   import Dropzone from './Dropzone.svelte';
-  import {
-    QuestionCircleOutline,
-    QuestionCircleSolid,
-  } from 'flowbite-svelte-icons';
+  import { QuestionCircleOutline } from 'flowbite-svelte-icons';
+  import type {
+    Batch,
+    MemberTableContext,
+  } from '$lib/contexts/MembersTableContext.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
+  import { DashboardError } from '$lib/utils/errors';
 
   type Props = {
-    context: GroupUserTableContext;
+    context: MemberTableContext;
+    open: boolean;
   };
 
-  const { context }: Props = $props();
+  let { context, open = $bindable() }: Props = $props();
 
-  const singleState: NewUser = $state({
-    username: '',
-    email: '',
-    password: '',
-  });
-  const multiState = $state({ prefix: '', email: '', batchNumber: '2' });
-  const logState = $state({ open: false, href: '' });
+  const user: NewUser = $state({ username: '', email: '', password: '' });
+  const batch: Batch = $state({ prefix: '', email: '', amount: 2 });
+  const toaster = getErrorContext();
+
   let file: File | undefined = $state();
-
   let dragging = $state(false);
-  let singleTab = $state(true);
-  let multiTab = $state(false);
-  let fileTab = $state(false);
+
+  let tab = $state({ single: true, multi: false, csv: false });
+
+  let log = $state({ open: false, href: '' });
 
   async function handleSubmit() {
-    if (singleTab) {
-      context.createEntry(singleState);
-    } else if (multiTab) {
-      const number = Number(multiState.batchNumber);
-      if (isNaN(number)) throw TypeError('batchNumber must be a number');
-      const batchData: BatchData = { ...multiState, batchNumber: number };
-
-      const { exportData } = await context.batchCreateEntry(batchData);
-
-      logState.href = encodeURI(exportData);
-      logState.open = true;
-    } else if (fileTab && file) {
-      await context.createFromCSV(file);
+    open = false;
+    if (tab.single) {
+      context.createUser(user);
+    } else if (tab.multi) {
+      if (isNaN(batch.amount)) {
+        DashboardError.create('Amount must be a number.').toast(toaster);
+      }
+      const csv = await context.createUsers(batch);
+      log.href = csv.uri;
+      log.open = true;
+    } else if (tab.csv && file) {
+      await context.createUsersFromCSV(file);
     }
   }
 </script>
 
 <Modal
-  bind:open={context.createOpen}
+  bind:open
   ondragover={(_e) => (dragging = true)}
   ondragleave={(_e) => (dragging = false)}
   title="Create New User"
@@ -71,20 +67,20 @@
   <form class="flex flex-col gap-2" ondragover={(_e) => (dragging = true)}>
     <Tabs>
       <TabItem
-        bind:open={singleTab}
+        bind:open={tab.single}
         title="Single"
         defaultClass="text-lg font-semibold"
         divClass="flex flex-col gap-2"
       >
         <Label>Username:</Label>
-        <Input bind:value={singleState.username} />
+        <Input bind:value={user.username} />
         <Label>Email:</Label>
-        <Input bind:value={singleState.email} />
+        <Input bind:value={user.email} />
         <Label>Password:</Label>
-        <Input bind:value={singleState.password} />
+        <Input bind:value={user.password} />
       </TabItem>
       <TabItem
-        bind:open={multiTab}
+        bind:open={tab.multi}
         title="Multiple"
         defaultClass="text-lg font-semibold"
         divClass="flex flex-col gap-2"
@@ -93,23 +89,25 @@
           <Label class="grow justify-self-end text-end text-lg font-semibold">
             Create
             <Input
-              bind:value={multiState.batchNumber}
+              bind:value={batch.amount}
               maxlength={3}
               class="inline h-6 w-16"
-              onkeypress={(e) =>
-                isNaN(Number(e.key)) ? e.preventDefault() : null}
-            /> Members
+              onkeypress={(e) => {
+                if (isNaN(Number(e.key))) e.preventDefault();
+              }}
+            />
+            Members
           </Label>
         </section>
 
         <Label>Prefix:</Label>
-        <Input bind:value={multiState.prefix} />
+        <Input bind:value={batch.prefix} />
 
         <Label>Email:</Label>
-        <Input bind:value={multiState.email} />
+        <Input bind:value={batch.email} />
       </TabItem>
       <TabItem
-        bind:open={fileTab}
+        bind:open={tab.csv}
         title="File"
         defaultClass="text-lg font-semibold"
         divClass="flex flex-col "
@@ -135,14 +133,12 @@
     </span>
   </form>
 </Modal>
-<Modal
-  bind:open={logState.open}
-  dismissable={false}
-  title="Download Batch Data"
->
+<Modal bind:open={log.open} dismissable={false} title="Download Batch Data">
   <Button
-    bind:href={logState.href}
-    onclick={() => (logState.open = false)}
-    download="passwords.csv">Download Member Data</Button
+    bind:href={log.href}
+    onclick={() => (log.open = false)}
+    download="passwords.csv"
   >
+    Download Member Data
+  </Button>
 </Modal>

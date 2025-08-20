@@ -1,19 +1,19 @@
-<script lang="ts" generics="T, CreateT, TOwner">
+<script lang="ts" generics="T">
+  import type { hasEntries } from '$lib/utils/tables.svelte';
   import { TableHead, TableHeadCell, Checkbox } from 'flowbite-svelte';
-  import type { TableContext } from '$lib/utils/types';
 
   type Props = {
-    context: TableContext<T, CreateT, TOwner>;
+    context: hasEntries<T>;
     headers: string[];
   };
 
   const { headers, context }: Props = $props();
-  let checkAll = $state(false);
+  let checked = $state(false);
 
-  const onCheckAll = (value: boolean) => {
+  const checkAll= () => {
     context.entries.forEach((entry) => {
       if (entry.visible) {
-        entry.selected = value;
+        entry.selected = checked;
       }
     });
   };
@@ -21,7 +21,7 @@
 
 <TableHead>
   <TableHeadCell class="!p-4">
-    <Checkbox on:change={() => onCheckAll(checkAll)} bind:checked={checkAll} />
+    <Checkbox on:change={() => checkAll()} bind:checked={checked} />
   </TableHeadCell>
   {#each headers as header}
     <TableHeadCell>{header}</TableHeadCell>

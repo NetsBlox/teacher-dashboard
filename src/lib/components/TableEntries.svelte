@@ -1,5 +1,5 @@
-<script lang="ts" generics="T, CreateT, TOwner">
-  import { type TableContext } from '$lib/utils/types';
+<script lang="ts" generics="T">
+  import type { hasEntries, hasKeys } from '$lib/utils/tables.svelte';
   import { isNetsbloxTime } from '$lib/utils/validators';
   import {
     TableBody,
@@ -11,7 +11,7 @@
   } from 'flowbite-svelte';
 
   type Props = {
-    context: TableContext<T, CreateT, TOwner>;
+    context: hasEntries<T> & hasKeys<T>;
   };
 
   let { context }: Props = $props();
@@ -33,16 +33,16 @@
             <TableBodyCell>{cell}</TableBodyCell>
           {/if}
         {/each}
-        {#if context.actions}
+        {#if entry.actions}
           <TableBodyCell>
             <ButtonGroup>
-              {#each context.actions as action}
+              {#each entry.actions as action}
                 <Button
                   outline
                   color="primary"
-                  onclick={(_e: MouseEvent) =>
-                    action.func(entry, context.owner)}>{action.name}</Button
-                >
+                  onclick={(_e: MouseEvent) => action()}
+                  >{action.name}
+                </Button>
               {/each}
             </ButtonGroup>
           </TableBodyCell>

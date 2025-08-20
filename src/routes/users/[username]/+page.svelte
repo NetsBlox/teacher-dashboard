@@ -8,13 +8,14 @@
   import { NavTitleText } from '$lib/contexts/Contexts.svelte';
   import SharedProjectTable from '$lib/components/SharedProjectTable.svelte';
   import OwnedProjectTable from '$lib/components/OwnedProjectTable.svelte';
+  import { DashboardError } from '$lib/utils/errors';
 
   let { data }: PageProps = $props();
 
-  const { user, projects, shared, groups, libraries } = $derived(data);
-  const owner = $derived(user?.username || '');
-  const getOwner = () => owner;
-  NavTitleText.value = `User: ${getOwner()}`;
+  const { projects, shared, groups, libraries } = $derived(data);
+  const { user } = data
+  const owner = user?.username || '';
+  NavTitleText.value = `User: ${owner}`;
 </script>
 
 <Tabs>

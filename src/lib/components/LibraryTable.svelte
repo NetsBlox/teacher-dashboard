@@ -7,6 +7,7 @@
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
   import CreateLibraryModal from './CreateLibraryModal.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
   type Props = {
     owner: string;
@@ -15,9 +16,14 @@
 
   let { owner, libraries }: Props = $props();
 
-  const headers = ['name', 'owner'];
-  const keys: (keyof LibraryMetadata)[] = ['name', 'owner'];
-  const context = new LibraryTableContext(owner, libraries, keys, 'name');
+  const headers = ['name', 'state'];
+  const keys: (keyof LibraryMetadata)[] = ['name', 'state'];
+  const toaster = getErrorContext()
+  const context = new LibraryTableContext(owner, libraries, keys, 'name', toaster);
+
+  let creatorOpen = $state(false);
+  let deletorOpen = $state(false);
+  
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -28,11 +34,11 @@
     bind:inputValue={context.search}
   />
   <section>
-    <Button outline on:click={() => (context.createOpen = true)}>
+    <Button outline on:click={() => (creatorOpen = true)}>
       <PlusOutline /> Import
     </Button>
     <Button
-      on:click={() => (context.deleteOpen = true)}
+      on:click={() => (deletorOpen = true)}
       disabled={!context.entries.some((x) => x.selected)}
       outline
       color="red"
@@ -46,5 +52,5 @@
   <TableEntries {context} />
 </Table>
 
-<CreateLibraryModal {context} />
-<DeleteEntryModal {context} label="Libraries"/>
+<CreateLibraryModal {context} bind:open={creatorOpen} />
+<DeleteEntryModal {context} label="Libraries" bind:open={deletorOpen}/>

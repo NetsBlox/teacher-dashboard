@@ -7,15 +7,22 @@
 
   import type { LayoutProps } from './$types';
   import { page } from '$app/state';
+  import {
+    ErrorContext,
+    setErrorContext,
+  } from '$lib/contexts/ErrorContext.svelte';
 
   let { data, children }: LayoutProps = $props();
+
+  const errors = $state(new ErrorContext());
+  setErrorContext(errors);
 
   const url = $derived(loginUrl(page.url));
 </script>
 
 <main>
   <Nav {url} authUser={data.authUser} />
-  <ErrorToastSet />
+  <ErrorToastSet context={errors} />
   <section class="p-5">
     {@render children?.()}
   </section>

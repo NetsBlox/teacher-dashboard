@@ -4,13 +4,9 @@ import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId';
 import type { PageLoad } from './$types';
 import type { Submission } from 'netsblox-cloud-client/src/types/Submission';
-import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
-
-type Fetch = (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-) => Promise<Response>;
+import { DashboardError } from '$lib/utils/errors';
+import type { Fetch } from '$lib/utils/types';
 
 const getAssignment = async (fetch: Fetch, groupId: string, assignmentId: string) => {
   const response = await fetch(CLOUD_URL + '/groups/id/' + groupId + '/assignments/id/' + assignmentId + '/', {
@@ -42,8 +38,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
     const [ assignment, submissions ] = await Promise.all([assignmentP, submissionsP])
     return {assignment, submissions, groupId, assignmentId}
   } catch(err){
-    ErrorSetContext.push(new Error("Failed to load submissions."))
-    console.error(err)
+    DashboardError.create("Failed to load submissions.").toast()
     return {assignment: null, submissions: [], groupId, assignmentId}
   }
 

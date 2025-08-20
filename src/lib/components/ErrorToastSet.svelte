@@ -1,7 +1,14 @@
 <script lang="ts">
-  import { ErrorSetContext as errors } from '$lib/contexts/Contexts.svelte';
   import { CloseCircleOutline } from 'flowbite-svelte-icons';
   import { Toast } from 'flowbite-svelte';
+  import type { ErrorContext } from '$lib/contexts/ErrorContext.svelte';
+
+  type Props = {
+    context: ErrorContext;
+  }
+
+  const { context }: Props = $props();
+  const errors = $derived(context.errors)
 </script>
 
 <div class="bg-green-500 fixed right-0 bottom-0 w-full z-50">

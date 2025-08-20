@@ -1,15 +1,17 @@
-
 <script lang="ts">
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from './TableHeaders.svelte';
   import TableEntries from './TableEntries.svelte';
   import { TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
-  import { SubmissionTableContext, type SubmissionOwner } from '$lib/contexts/SubmissionTableContext.svelte';
+  import {
+    SubmissionTableContext,
+    type SubmissionOwner,
+  } from '$lib/contexts/SubmissionTableContext.svelte';
   import type { Submission } from 'netsblox-cloud-client/src/types/Submission';
   import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
   import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId';
-
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
   type Props = {
     groupId: GroupId;
@@ -20,8 +22,17 @@
   let { submissions, assignmentId, groupId }: Props = $props();
   const keys: (keyof Submission)[] = ['owner', 'originTime'];
   const headers = ['name', 'origin time', 'actions'];
-  const owner: SubmissionOwner = {groupId, assignmentId}
-  const context = new SubmissionTableContext(owner, submissions, keys, 'owner');
+  const owner: SubmissionOwner = { groupId, assignmentId };
+  const toaster = getErrorContext();
+  const context = new SubmissionTableContext(
+    owner,
+    submissions,
+    keys,
+    'owner',
+    toaster,
+  );
+
+  let deletorOpen = $state(false);
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -33,7 +44,7 @@
   />
   <section>
     <Button
-      on:click={() => (context.deleteOpen = true)}
+      on:click={() => (deletorOpen = true)}
       disabled={!context.entries.some((x) => x.selected)}
       outline
       color="red"
@@ -46,4 +57,4 @@
   <TableHeaders {headers} {context} />
   <TableEntries {context} />
 </Table>
-<DeleteEntryModal {context} label="Submissions"/>
+<DeleteEntryModal {context} bind:open={deletorOpen} label="Submissions" />

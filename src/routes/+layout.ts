@@ -1,4 +1,4 @@
-import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
+import { DashboardError } from '$lib/utils/errors';
 import { CLOUD_URL } from '$lib/utils/routes';
 import type { LayoutLoad } from './$types';
 
@@ -16,8 +16,8 @@ async function whoami(fetch: any) {
 export const load: LayoutLoad = async ({ fetch }) => {
   try {
     return await whoami(fetch);
-  } catch {
-    ErrorSetContext.push(new Error('Failed to reach cloud.'));
+  } catch(_e) {
+    DashboardError.create('Failed to reach cloud.');
     return { authUser: undefined };
   }
 };
