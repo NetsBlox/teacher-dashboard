@@ -9,7 +9,7 @@
   import { goto, invalidate } from '$app/navigation';
 
   import { CLOUD_URL } from '$lib/utils/routes';
-  import { ErrorSetContext, NavTitleText } from '$lib/contexts/Contexts.svelte';
+  import { NavTitleText } from '$lib/contexts/Contexts.svelte';
 
   import logo from "$assets/logo.svg"
 
@@ -30,7 +30,6 @@
       if (!res.ok) throw Error;
     } catch (rawErr) {
       const err = new Error('Failed to logout.');
-      ErrorSetContext.push(err);
       throw rawErr;
     }
   }
