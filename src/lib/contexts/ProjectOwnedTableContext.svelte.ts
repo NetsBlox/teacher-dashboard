@@ -97,7 +97,8 @@ export class OwnedProjectTableContext implements TableType {
 
   private createActions = (value: ProjectMetadata) => {
     const url = `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(this.owner)}&ProjectName=${encodeURIComponent(value.name)}`;
-    const Open = () => void window.open(url);
+    const Open = function () {void window.open(url)};
+    Object.defineProperty(Open, "name", {value: "Open"})
     return [Open];
   };
 }

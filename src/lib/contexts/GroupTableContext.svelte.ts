@@ -88,7 +88,8 @@ export class GroupTableContext implements TableType {
   }
 
   private createActions = (value: Group) => {
-    const View = () => goto('/groups/' + value.id + '/');
+    const View = () => {goto('/groups/' + value.id + '/')};
+    Object.defineProperty(View, "name", {value: "View"})
     return [View];
   };
 }

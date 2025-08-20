@@ -89,6 +89,7 @@ export class AssignmentTableContext implements TableType {
 
   private createActions = (value: Assignment) => {
     const View = () => goto(`/groups/${value.groupId}/assignments/${value.id}/`);
+    Object.defineProperty(View, "name", {value: "View"})
     return [View];
   };
 }
