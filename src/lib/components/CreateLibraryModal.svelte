@@ -6,9 +6,11 @@
 
   type Props = {
     context: LibraryTableContext;
+    open: boolean;
   };
 
-  let { context }: Props = $props();
+  let { context, open = $bindable()}: Props = $props();
+
   let data: CreateLibraryData = $state({
     name: '',
     notes: '',
@@ -18,13 +20,14 @@
   let dragging = $state(false);
 
   const handleCreate = async () => {
-    data.blocks = file? await file.text(): '';
-    context.createEntry(data)
-  }
+    data.blocks = file ? await file.text() : '';
+    context.createLibrary(data);
+    open = false;
+  };
 </script>
 
 <Modal
-  bind:open={context.createOpen}
+  bind:open
   ondragover={(_e) => (dragging = true)}
   ondragleave={(_e) => (dragging = false)}
   title="Add Library From File"
@@ -40,11 +43,7 @@
     <Dropzone bind:file {dragging} acceptType=".xml" />
     <Hr />
     <span>
-      <Button
-        outline
-        onclick={() => handleCreate() }
-        class="self-start"
-      >
+      <Button outline onclick={() => handleCreate()} class="self-start">
         Create
       </Button>
     </span>

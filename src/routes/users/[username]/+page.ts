@@ -1,4 +1,3 @@
-import { ErrorSetContext } from '$lib/contexts/Contexts.svelte';
 import { CLOUD_URL } from '$lib/utils/routes';
 import { RequestError } from 'netsblox-cloud-client/src/error';
 import type { Group } from 'netsblox-cloud-client/src/types/Group';
@@ -6,11 +5,8 @@ import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMet
 import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import type { PageLoad } from './$types';
-
-type Fetch = (
-  input: RequestInfo | URL,
-  init?: RequestInit,
-) => Promise<Response>;
+import { DashboardError } from '$lib/utils/errors';
+import type { Fetch } from '$lib/utils/types';
 
 const getUser = async (fetch: Fetch, username: string) => {
   const response = await fetch(CLOUD_URL + '/users/' + username, {
@@ -75,9 +71,7 @@ export const load: PageLoad = async ({ fetch, params }) => {
     const [user, projects, shared, libraries, groups] = await allPs;
     return { user, projects, shared, libraries, groups };
   } catch (err) {
-    const errEntry = new Error('Failed to load user data');
-    ErrorSetContext.push(errEntry);
-    console.error(err);
+    DashboardError.create("Failed to load user.").toast();
     return { user: null, projects: [], shared: [], libraries: [], groups: [] };
   }
 };

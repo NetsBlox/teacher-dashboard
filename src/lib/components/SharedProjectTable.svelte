@@ -3,9 +3,8 @@
   import { Table, TableSearch } from 'flowbite-svelte';
   import TableHeaders from './TableHeaders.svelte';
   import TableEntries from './TableEntries.svelte';
-  import DeleteEntryModal from './DeleteEntryModal.svelte';
-  import { ProjectSharedTableContext } from '$lib/contexts/ProjectSharedTableContext.svelte';
-  import CreateProjectModal from './CreateProjectModal.svelte';
+  import { SharedProjectTableContext } from '$lib/contexts/ProjectSharedTableContext.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
   type Props = {
     projects: ProjectMetadata[];
@@ -13,9 +12,10 @@
   };
 
   let { projects, owner }: Props = $props();
-  const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
-  const headers = ['name', 'owner', 'actions'];
-  const context = new ProjectSharedTableContext(owner, projects, keys, 'name');
+  const keys: (keyof ProjectMetadata)[] = ['name', 'owner', 'originTime', 'updated'];
+  const headers = ['name', 'owner','created', 'last modified', 'actions'];
+  const toaster = getErrorContext()
+  const context = new SharedProjectTableContext(owner, projects, keys, 'name', toaster);
 
 </script>
 
@@ -33,6 +33,4 @@
   <TableHeaders {headers} {context} />
   <TableEntries {context}/>
 </Table>
-<CreateProjectModal {context} />
-<DeleteEntryModal {context} label="Projects"/>
 

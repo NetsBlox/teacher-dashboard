@@ -21,28 +21,30 @@
 
   type Props = {
     context: AssignmentTableContext;
+    open: boolean;
   };
 
-  const { context }: Props = $props();
+  let { context, open = $bindable() }: Props = $props();
 
   let dragging = $state(false);
   const rawData = $state({ name: '', date: new Date(), time: '23:59' });
 
   const handleClick = () => {
-    if(!RegExp(/\d{2}:\d{2}/).test(rawData.time)){
-      ErrorSetContext.push(Error("Failed to parse time"));
+    open = false;
+    if (!RegExp(/\d{2}:\d{2}/).test(rawData.time)) {
+      ErrorSetContext.push(Error('Failed to parse time'));
       return;
     }
     const data: CreateAssignmentData = {
       name: rawData.name,
       dueDate: createNetsbloxTime(rawData.date, rawData.time),
     };
-    context.createEntry(data)
+    context.createAssignment(data);
   };
 </script>
 
 <Modal
-  bind:open={context.createOpen}
+  bind:open
   ondragover={(_e) => (dragging = true)}
   ondragleave={(_e) => (dragging = false)}
   title="Create New Assignment"

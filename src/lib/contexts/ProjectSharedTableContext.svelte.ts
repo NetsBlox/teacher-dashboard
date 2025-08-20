@@ -1,64 +1,80 @@
-import { invalidate } from '$app/navigation';
 import api from '$lib/utils/api';
+import utils from '$lib/utils/tables.svelte';
+
 import { BROWSER_URL, CLOUD_URL } from '$lib/utils/routes';
 import { getContext, setContext } from 'svelte';
 
+import { invalidate } from '$app/navigation';
+import { DashboardError } from '$lib/utils/errors';
 import type {
-  StringKey,
-  TableEntryAction,
-  TableErrors,
-  TableFns,
-} from '$lib/utils/types';
-import type { CreateProjectData } from 'netsblox-cloud-client/src/types/CreateProjectData';
+  HasEntries,
+  Searchable,
+  TableEntry,
+} from '$lib/utils/tables.svelte';
+import type { StringKey } from '$lib/utils/types';
 import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
-import { ErrorSetContext } from './Contexts.svelte';
-import { GenericTableContext } from './GenericTableContext.svelte';
+import type { ErrorContext } from './ErrorContext.svelte';
 
-const Fns: TableFns<ProjectMetadata, CreateProjectData, string> = {
-  createFn: (data, _owner) => api.createProject(data),
-  readFn: (owner) => api.listSharedProjects(owner),
-  deleteFn: (entry) => api.deleteProject(entry.id),
-  invalidateFn: (owner) => invalidate(CLOUD_URL + '/projects/shared/' + owner),
-};
+type TableType = HasEntries<ProjectMetadata> & Searchable<ProjectMetadata>;
 
-const errors: TableErrors = {
-  createErr: Error('Failed to import project'),
-  readErr: Error('Failed to refresh projects list'),
-  deleteErr: Error('Failed to delete project'),
-};
+export class SharedProjectTableContext implements TableType {
+  owner: string;
+  entries: TableEntry<ProjectMetadata>[] = $state([]);
 
-const actions: TableEntryAction<ProjectMetadata, string>[] = [
-  {
-    name: 'Open',
-    func: (entry, owner) =>
-      window.open(
-        `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(entry.value.owner)}&ProjectName=${encodeURIComponent(entry.value.name)}`,
-      ),
-  },
-];
+  keys: (keyof ProjectMetadata)[];
+  searchKey: StringKey<ProjectMetadata>;
 
-export class ProjectSharedTableContext extends GenericTableContext<
-  ProjectMetadata,
-  CreateProjectData,
-  string
-> {
-  actions = actions;
+  toaster: ErrorContext;
+
+  private _search: string = $state('');
+  get search() {
+    return this._search;
+  }
+  set search(value: string) {
+    this._search = value;
+    this.filter();
+  }
+
   constructor(
     owner: string,
     projects: ProjectMetadata[],
     keys: (keyof ProjectMetadata)[],
     searchKey: StringKey<ProjectMetadata>,
+    toaster: ErrorContext,
   ) {
-    super(Fns, errors, ErrorSetContext, owner, projects, keys, searchKey);
+    this.owner = owner;
+    this.entries = utils.initEntries(projects, this.createActions);
+    this.keys = keys;
+    this.searchKey = searchKey;
+    this.toaster = toaster;
   }
+
+  async refresh() {
+    try {
+      await invalidate(CLOUD_URL + '/projects/shared/' + this.owner);
+      const projects = await api.listSharedProjects(this.owner);
+      this.entries = utils.initEntries(projects, this.createActions);
+    } catch (_e) {
+      DashboardError.create('Failed to refresh entries.').toast(this.toaster);
+    }
+  }
+
+  filter() {
+    utils.filter(this);
+  }
+
+  private createActions = (value: ProjectMetadata) => {
+    const url = `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(value.owner)}&ProjectName=${encodeURIComponent(value.name)}`;
+    const Open = () => void window.open(url);
+    return [Open];
+  };
 }
+const key = Symbol('SharedProjectTable');
 
-const key = Symbol('CollaborationTable');
-
-export function setProjectSharedTableContext(value: ProjectSharedTableContext) {
+export function setProjectSharedTableContext(value: SharedProjectTableContext) {
   setContext(key, value);
 }
 
 export function getProjectSharedTableContext() {
-  return getContext<ProjectSharedTableContext>(key);
+  return getContext<SharedProjectTableContext>(key);
 }

@@ -8,6 +8,7 @@
   import { AssignmentTableContext } from '$lib/contexts/AssignmentTableContext.svelte';
   import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
   import CreateAssignmentModal from './CreateAssignmentModal.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
 
   type Props = {
@@ -18,7 +19,11 @@
   const { assignments, groupId }: Props = $props();
   const keys: (keyof Assignment)[] = ['name', 'originTime', 'dueDate'];
   const headers = ['name', 'origin time', 'due date', 'actions'];
-  const context = new AssignmentTableContext(groupId, assignments, keys, 'name');
+  const toaster = getErrorContext()
+  const context = new AssignmentTableContext(groupId, assignments, keys, 'name', toaster);
+
+  let creatorOpen = $state(false);
+  let deletorOpen = $state(false);
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -29,11 +34,11 @@
     bind:inputValue={context.search}
   />
   <section>
-    <Button outline on:click={() => (context.createOpen = true)}>
+    <Button outline on:click={() => (creatorOpen = true)}>
       <PlusOutline /> Create Assignment
     </Button>
     <Button
-      on:click={() => (context.deleteOpen = true)}
+      on:click={() => (deletorOpen = true)}
       disabled={!context.entries.some((x) => x.selected)}
       outline
       color="red"
@@ -46,5 +51,5 @@
   <TableHeaders {headers} {context} />
   <TableEntries {context} />
 </Table>
-<CreateAssignmentModal {context} />
-<DeleteEntryModal {context} label="Assignments"/>
+<CreateAssignmentModal {context} bind:open={creatorOpen} />
+<DeleteEntryModal {context} bind:open={deletorOpen} label="Assignments"/>

@@ -6,18 +6,28 @@
   import { PlusOutline, TrashBinOutline } from 'flowbite-svelte-icons';
   import DeleteEntryModal from './DeleteEntryModal.svelte';
   import CreateProjectModal from './CreateProjectModal.svelte';
-  import { ProjectOwnedTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
+  import { OwnedProjectTableContext } from '$lib/contexts/ProjectOwnedTableContext.svelte';
+  import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
   type Props = {
     projects: ProjectMetadata[];
     owner: string;
   };
 
-  let { projects, owner }: Props = $props();
-  const keys: (keyof ProjectMetadata)[] = ['name', 'owner'];
-  const headers = ['name', 'owner', 'actions'];
-  const context = new ProjectOwnedTableContext(owner, projects, keys, 'name');
+  const { projects, owner }: Props = $props();
+  const keys: (keyof ProjectMetadata)[] = ['name', 'originTime', 'updated'];
+  const headers = ['name', 'created', 'last modified', 'actions'];
+  const toaster = getErrorContext();
+  const context = new OwnedProjectTableContext(
+    owner,
+    projects,
+    keys,
+    'name',
+    toaster,
+  );
 
+  let creatorOpen = $state(false);
+  let deletorOpen = $state(false);
 </script>
 
 <span class="flex flex-row items-center justify-between">
@@ -28,11 +38,11 @@
     bind:inputValue={context.search}
   />
   <section>
-    <Button outline on:click={() => (context.createOpen = true)}>
+    <Button outline on:click={() => (creatorOpen = true)}>
       <PlusOutline /> Import Project
     </Button>
     <Button
-      on:click={() => (context.deleteOpen = true)}
+      on:click={() => (deletorOpen = true)}
       disabled={!context.entries.some((x) => x.selected)}
       outline
       color="red"
@@ -43,8 +53,7 @@
 </span>
 <Table shadow hoverable={true}>
   <TableHeaders {headers} {context} />
-  <TableEntries {context}/>
+  <TableEntries {context} />
 </Table>
-<CreateProjectModal {context} />
-<DeleteEntryModal {context} label="Projects"/>
-
+<CreateProjectModal {context} bind:open={creatorOpen} />
+<DeleteEntryModal {context} label="Projects" bind:open={deletorOpen} />
