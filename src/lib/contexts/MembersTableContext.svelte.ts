@@ -162,6 +162,7 @@ export class MemberTableContext implements TableType {
 
   private createActions = (value: User) => {
     const View = () => goto('/users/' + value.username + '/');
+    Object.defineProperty(View, "name", {value: "View"})
     return [View];
   };
 }

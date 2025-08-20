@@ -117,6 +117,7 @@ export class SubmissionTableContext implements TableType {
           '&submissionId=' +
           encodeURIComponent(value.id),
       );
+    Object.defineProperty(Open, "name", {value: "Open"})
     return [Open];
   };
 }
