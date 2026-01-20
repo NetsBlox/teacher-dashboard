@@ -22,3 +22,24 @@ export function isNetsbloxTime(value: unknown): value is NetsbloxTime {
         typeof value.nanos_since_epoch === 'number'
     );
 }
+
+export interface TEMP_NEWUSERERRORRESPONSE {
+  username: string;
+  status: number;
+  message: string;
+}
+
+export function isNewUserErrorResponseArray(value: unknown): value is TEMP_NEWUSERERRORRESPONSE[]{
+    return Boolean(
+        value &&
+        value instanceof Array &&
+        (value.length === 0 ||
+          Object.keys(value[0]).length === 3 &&
+          'username' in value[0] &&
+          'status' in value[0] &&
+          'message' in value[0] &&
+          typeof value[0].username === 'string' &&
+          typeof value[0].status === 'number' && 
+          typeof value[0].message === 'string' )
+    );
+}

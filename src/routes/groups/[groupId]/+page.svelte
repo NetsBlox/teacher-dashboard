@@ -1,22 +1,33 @@
 <script lang="ts">
   import { Tabs, TabItem } from 'flowbite-svelte';
-  import UserTable from '$lib/components/UserTable.svelte';
-  import AssignmentsTable from '$lib/components/AssignmentsTable.svelte';
-  import { NavTitleText } from '$lib/contexts/Contexts.svelte';
-  import type { Group } from 'netsblox-cloud-client/src/types/Group.js';
+  import UserTable from '$lib/comp/tables/UserTable.svelte';
+  import AssignmentsTable from '$lib/comp/tables/AssignmentsTable.svelte';
+  import { getNavbarContext } from '$lib/contexts/Contexts.svelte.js';
+  import Loading from '$lib/comp/Loading.svelte';
 
   let { data } = $props();
 
-  const { members, assignments } = $derived(data);
-  const group: Group = data.group || { id: '', owner: '', name: '' };
-  NavTitleText.value = `Group: ${group?.name}`;
+  let { groupAR, membersAR, assignmentsAR } = $derived(data);
+  const navbar = getNavbarContext();
+  navbar.title = `Group: loading...`;
+  // svelte-ignore state_referenced_locally
+  groupAR.andTee((g) => (navbar.title = `Group: ${g.name}`));
 </script>
 
-<Tabs>
-  <TabItem open title="Members">
-    <UserTable {members} {group} />
-  </TabItem>
-  <TabItem title="Assignments">
-    <AssignmentsTable groupId={group?.id || ''} {assignments} />
-  </TabItem>
-</Tabs>
+{#await groupAR}
+  <Loading />
+{:then groupR}
+  {#if groupR.isErr()}
+    <h class="text-white"> Failed to retrieve group </h>
+  {:else}
+    {@const group = groupR.value}
+    <Tabs>
+      <TabItem open title="Members">
+        <UserTable bind:membersAR={membersAR} {group} />
+      </TabItem>
+      <TabItem title="Assignments">
+        <AssignmentsTable bind:assignmentsAR={assignmentsAR} {group} />
+      </TabItem>
+    </Tabs>
+  {/if}
+{/await}

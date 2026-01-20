@@ -1,5 +1,7 @@
 <script lang="ts">
-  import john from "$assets/john.svg"
+  import { page } from "$app/state";
+  import john from "$assets/john.svg";
+
 </script>
 
 <!-- Text Section -->
@@ -7,7 +9,7 @@
   <span
     class="mt-8 text-center align-middle text-5xl font-bold xl:text-6xl dark:text-gray-50"
   >
-    Oops! Something went wrong!
+    Something went wrong! ({page.error?.message})
   </span>
   <!-- Image Grid Section -->
   <img src={john} alt="lost john travolta" width="500" />

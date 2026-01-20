@@ -1,38 +1,44 @@
 <script lang="ts">
   import { Tabs, TabItem } from 'flowbite-svelte';
+  import Loading from '$lib/comp/Loading.svelte';
 
-  import GroupTable from '$lib/components/GroupTable.svelte';
-  import LibraryTable from '$lib/components/LibraryTable.svelte';
-
+  import GroupTable from '$lib/comp/tables/GroupTable.svelte';
+  import LibraryTable from '$lib/comp/tables/LibraryTable.svelte';
+  import ProjectTable from '$lib/comp/tables/ProjectTable.svelte';
+  import { getNavbarContext } from '$lib/contexts/Contexts.svelte';
   import type { PageProps } from './$types';
-  import { NavTitleText } from '$lib/contexts/Contexts.svelte';
-  import SharedProjectTable from '$lib/components/SharedProjectTable.svelte';
-  import OwnedProjectTable from '$lib/components/OwnedProjectTable.svelte';
-  import { DashboardError } from '$lib/utils/errors';
+  import { page } from '$app/state';
+  import CollabTable from '$lib/comp/tables/CollabTable.svelte';
 
+  getNavbarContext().title = `User: ${page.params.username}`;
   let { data }: PageProps = $props();
-
-  const { projects, shared, groups, libraries } = $derived(data);
-  const { user } = data
-  const owner = user?.username || '';
-  NavTitleText.value = `User: ${owner}`;
+  let { librariesAR, groupsAR, projectsAR, sharedAR, userAR } = $derived(data);
 </script>
 
-<Tabs>
-  <TabItem open title="Groups">
-    <GroupTable {groups} {owner} />
-  </TabItem>
-  <TabItem title="Projects">
-    <Tabs tabStyle="underline">
-      <TabItem open title="My Projects">
-        <OwnedProjectTable {projects} {owner} />
-      </TabItem>
-      <TabItem title="Collaborations">
-        <SharedProjectTable projects={shared} {owner} />
-      </TabItem>
-    </Tabs>
-  </TabItem>
-  <TabItem title="Libraries">
-    <LibraryTable {libraries} {owner} />
-  </TabItem>
-</Tabs>
+{#await userAR}
+  <Loading />
+{:then userR}
+  {#if userR.isErr()}
+    <h class="text-white"> user not found </h>
+  {:else}
+    {@const owner = userR.value.username}
+    <section class="flex flex-row gap-2">
+      <div class="flex-2/3">
+        <Tabs>
+          <TabItem open title="Groups">
+            <GroupTable bind:groupsAR {owner} />
+          </TabItem>
+          <TabItem title="My Projects">
+            <ProjectTable bind:projectsAR {owner} />
+          </TabItem>
+          <TabItem title="Collaborations">
+            <CollabTable bind:projectsAR={sharedAR} {owner} />
+          </TabItem>
+          <TabItem title="Libraries">
+            <LibraryTable bind:librariesAR {owner} />
+          </TabItem>
+        </Tabs>
+      </div>
+    </section>
+  {/if}
+{/await}
