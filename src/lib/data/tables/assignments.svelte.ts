@@ -63,7 +63,7 @@ export class AssignmentTable
 
   private createActions = (value: Assignment) => {
     const View =  () => void goto(`/groups/${value.groupId}/assignments/${value.id}/`)
-    View.title = "View"
+    View.label = "View"
     return [View];
   };
 }

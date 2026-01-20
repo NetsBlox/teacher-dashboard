@@ -42,7 +42,7 @@ export class CollabTable
       `${BROWSER_URL}/?action=present&Username=${value.owner}&ProjectName=${value.name}`,
     );
     const Open = () => void window.open(url);
-    Open.title = "Open"
+    Open.label = "Open"
     return [Open];
   };
 }

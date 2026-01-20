@@ -62,7 +62,7 @@ export class ProjectTable
   private createActions = (value: ProjectMetadata) => {
     const url = `${BROWSER_URL}/?action=present&Username=${encodeURIComponent(value.owner)}&ProjectName=${encodeURIComponent(value.name)}`;
     const Open = () => void window.open(url);
-    Open.title = 'Open';
+    Open.label = 'Open';
     return [Open];
   };
 }

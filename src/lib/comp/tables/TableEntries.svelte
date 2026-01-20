@@ -32,7 +32,7 @@
             <ButtonGroup>
               {#each entry.actions as action}
                 <Button outline color="primary" onclick={() => action()}
-                  >{action.title}
+                  >{action.label}
                 </Button>
               {/each}
             </ButtonGroup>

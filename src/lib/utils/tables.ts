@@ -3,7 +3,7 @@ import type { StringKey } from '$lib/utils/types';
 import { ResultAsync } from 'neverthrow';
 import { DashboardError } from './errors';
 
-export type Action = (() => void) & { title: string };
+export type Action = (() => void) & { label: string };
 
 export type TableEntry<T> = {
   selected: boolean;

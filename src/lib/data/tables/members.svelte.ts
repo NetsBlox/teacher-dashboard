@@ -119,7 +119,7 @@ export class MemberTable
 
   private actionMaker = (value: User) => {
     const View = () => void goto('/users/' + value.username + '/');
-    View.title = "View"
+    View.label = "View"
     return [View];
   };
 }

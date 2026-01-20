@@ -63,7 +63,7 @@ export class GroupTable
 
   private createActions = (value: Group) => {
     const View = () => void goto('/groups/' + value.id + '/')
-    View.title = "View";
+    View.label = "View";
     return [View];
   };
 }

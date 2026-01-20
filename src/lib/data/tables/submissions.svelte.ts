@@ -69,7 +69,7 @@ export class SubmissionTable
           '&submissionId=' +
           encodeURIComponent(value.id),
       );
-    Open.title = 'Open';
+    Open.label = 'Open';
     return [Open];
   };
 }
