@@ -7,7 +7,11 @@
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
-  import { PlusOutline, RefreshOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import {
+    PlusOutline,
+    RefreshOutline,
+    TrashBinOutline,
+  } from 'flowbite-svelte-icons';
   import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
   import { GroupTable } from '$lib/data/tables/groups.svelte';
   import CreateGroupModal from '$lib/comp/CreateGroupModal.svelte';
@@ -58,11 +62,12 @@
       />
       <section>
         <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline/>
+          <RefreshOutline />
           <span class="hidden md:inline"> Refresh</span>
         </Button>
         <Button outline onclick={() => (creatorOpen = true)}>
-          <PlusOutline /> Add Group
+          <PlusOutline />
+          <span class="hidden md:inline"> Add Group</span>
         </Button>
         <Button
           onclick={() => (deletorOpen = true)}
@@ -70,7 +75,8 @@
           outline
           color="red"
         >
-          <TrashBinOutline />Delete
+          <TrashBinOutline />
+          <span class="hidden md:inline"> Delete</span>
         </Button>
       </section>
     </span>

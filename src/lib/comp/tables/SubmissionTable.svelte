@@ -46,7 +46,7 @@
     <div>Error loading group members</div>
   {:else}
     {@const submissions = submissionsR.value}
-    {@const table = new SubmissionTable({...params, values: submissions} )}
+    {@const table = new SubmissionTable({ ...params, values: submissions })}
     <span class="flex flex-row items-center justify-between">
       <TableSearch
         classes={{
@@ -58,7 +58,7 @@
       />
       <section>
         <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline/>
+          <RefreshOutline />
           <span class="hidden md:inline"> Refresh</span>
         </Button>
         <Button
@@ -67,7 +67,8 @@
           outline
           color="red"
         >
-          <TrashBinOutline />Delete
+          <TrashBinOutline />
+          <span class="hidden md:inline"> Delete</span>
         </Button>
       </section>
     </span>

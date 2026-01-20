@@ -67,7 +67,8 @@
           <span class="hidden md:inline"> Refresh</span>
         </Button>
         <Button outline onclick={() => (creatorOpen = true)}>
-          <PlusOutline /> Import Project
+          <PlusOutline />
+          <span class="hidden md:inline"> Import Project</span>
         </Button>
         <Button
           onclick={() => (deletorOpen = true)}
@@ -75,7 +76,8 @@
           outline
           color="red"
         >
-          <TrashBinOutline />Delete
+          <TrashBinOutline />
+          <span class="hidden md:inline"> Delete </span>
         </Button>
       </section>
     </span>

@@ -8,7 +8,11 @@
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
-  import { PlusOutline, RefreshOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import {
+    PlusOutline,
+    RefreshOutline,
+    TrashBinOutline,
+  } from 'flowbite-svelte-icons';
   import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
   import CreateUserModal from '$lib/comp/CreateUserModal.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
@@ -41,7 +45,7 @@
 </script>
 
 {#await membersAR}
-  <Loading/>
+  <Loading />
 {:then membersR}
   {#if membersR.isErr()}
     <div>Error loading group members</div>
@@ -59,11 +63,12 @@
       />
       <section>
         <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline/>
+          <RefreshOutline />
           <span class="hidden md:inline"> Refresh</span>
         </Button>
         <Button outline onclick={() => (creatorOpen = true)}>
-          <PlusOutline /> Add Members
+          <PlusOutline />
+          <span class="hidden md:inline"> Add Members </span>
         </Button>
         <Button
           onclick={() => (deletorOpen = true)}
@@ -71,7 +76,8 @@
           outline
           color="red"
         >
-          <TrashBinOutline />Delete
+          <TrashBinOutline />
+          <span class="hidden md:inline"> Delete</span>
         </Button>
       </section>
     </span>
