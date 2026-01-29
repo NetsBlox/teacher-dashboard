@@ -1,6 +1,6 @@
 <script lang="ts" generics="T">
   import type { HasEntries, HasKeys } from '$lib/utils/tables';
-  import { isNetsbloxTime } from '$lib/utils/validators';
+  import { isNetsbloxTime } from '$lib/utils/guards';
   import { TableBody, TableBodyRow, TableBodyCell } from 'flowbite-svelte';
   import { Checkbox, Button, ButtonGroup } from 'flowbite-svelte';
 

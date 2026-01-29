@@ -12,7 +12,7 @@
   };
   let { data } = $props();
   // svelte-ignore state_referenced_locally
-  data.session.andTee((user) => (user ? goto(`/users/${user}/`) : null));
+  data.sessionAR.andTee((user) => (user ? goto(`/users/${user}/`) : null));
 
 </script>
 

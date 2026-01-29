@@ -3,8 +3,8 @@
 
   import '../app.css';
   import { loginUrl } from '$lib/utils/routes';
-  import Nav from '$lib/comp/Nav.svelte';
-  import ErrorToastSet from '$lib/comp/ErrorToastSet.svelte';
+  import Nav from '$lib/comp/misc/Nav.svelte';
+  import ErrorToastSet from '$lib/comp/misc/ErrorToastSet.svelte';
   import { page } from '$app/state';
   import { ErrorContext } from '$lib/contexts/ErrorContext.svelte';
   import { setErrorContext } from '$lib/contexts/ErrorContext.svelte';
@@ -18,9 +18,10 @@
   setNavbarContext(navbarContext);
 
   const url = $derived(loginUrl(page.url));
+
 </script>
 
-<Nav title={navbarContext.title} {url} session={data.session} />
+<Nav title={navbarContext.title} {url} sessionAR={data.sessionAR} />
 <ErrorToastSet context={errorContext} />
 <main class="flex-1 p-5">
   {@render children?.()}

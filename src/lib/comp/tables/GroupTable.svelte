@@ -7,16 +7,14 @@
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
-  import {
-    PlusOutline,
-    RefreshOutline,
-    TrashBinOutline,
-  } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
+  import { PlusOutline, RefreshOutline } from 'flowbite-svelte-icons';
+
+  import { TrashBinOutline } from 'flowbite-svelte-icons';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
   import { GroupTable } from '$lib/data/tables/groups.svelte';
-  import CreateGroupModal from '$lib/comp/CreateGroupModal.svelte';
+  import CreateGroupModal from '$lib/comp/modals/CreateGroup.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
-  import Loading from '$lib/comp/Loading.svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
   import { getGroups } from '$lib/utils/api/groups';
 
   type Props = {
@@ -60,25 +58,31 @@
         hoverable={true}
         bind:inputValue={table.search}
       />
-      <section>
-        <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline />
-          <span class="hidden md:inline"> Refresh</span>
-        </Button>
-        <Button outline onclick={() => (creatorOpen = true)}>
-          <PlusOutline />
-          <span class="hidden md:inline"> Add Group</span>
-        </Button>
-        <Button
-          onclick={() => (deletorOpen = true)}
-          disabled={!table.entries.some((x) => x.selected)}
-          outline
-          color="red"
-        >
-          <TrashBinOutline />
-          <span class="hidden md:inline"> Delete</span>
-        </Button>
-      </section>
+      <menu>
+        <menuitem>
+          <Button outline onclick={() => table.refresh()} color="amber">
+            <RefreshOutline />
+            <span class="hidden md:inline"> Refresh</span>
+          </Button>
+        </menuitem>
+        <menuitem>
+          <Button outline onclick={() => (creatorOpen = true)}>
+            <PlusOutline />
+            <span class="hidden md:inline"> Add Group</span>
+          </Button>
+        </menuitem>
+        <menuitem>
+          <Button
+            onclick={() => (deletorOpen = true)}
+            disabled={!table.entries.some((x) => x.selected)}
+            outline
+            color="red"
+          >
+            <TrashBinOutline />
+            <span class="hidden md:inline"> Delete</span>
+          </Button>
+        </menuitem>
+      </menu>
     </span>
     <Table shadow hoverable={true}>
       <TableHeaders {headers} {table} />

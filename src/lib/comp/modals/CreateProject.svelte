@@ -2,7 +2,7 @@
   import type { ProjectTable } from '$lib/data/tables/projects.svelte';
 
   import { Button, Modal, Hr, Label } from 'flowbite-svelte';
-  import Dropzone from './Dropzone.svelte';
+  import Dropzone from '../misc/Dropzone.svelte';
   import { parseProject } from '$lib/utils/misc';
   import { DashboardError } from '$lib/utils/errors';
 

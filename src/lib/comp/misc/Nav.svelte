@@ -12,11 +12,11 @@
 
   interface Props {
     url: string;
-    session: ResultAsync<string | null, DashboardError>;
+    sessionAR: ResultAsync<string | null, DashboardError>;
     title: string;
   }
 
-  let { url, session, title }: Props = $props();
+  let { url, sessionAR, title }: Props = $props();
   const handleLogout = (fetch: Fetch) =>
     logout(fetch).andTee(async () => {
       await invalidate(CLOUD_URL + '/users/whoami');
@@ -27,15 +27,15 @@
 <Navbar fluid class="border-b-2 border-b-gray-800 font-bold">
   <NavBrand href="/">
     <img src={logo} class="mr-3 h-12" alt="Netsblox Logo" />
-    <span class="text-2xl text-gray-400"> {title}</span>
+    <h1 class="text-2xl text-gray-400"> {title}</h1>
   </NavBrand>
   <NavHamburger />
   <NavUl>
     <NavLi class="text-lg dark:text-gray-400" href="/">Home</NavLi>
-    {#await session}
+    {#await sessionAR}
       <NavLi class="text-lg dark:text-gray-400">Loading...</NavLi>
-    {:then user}
-      {@const loggedIn = user.isOk() && !!user.value}
+    {:then sessionR}
+      {@const loggedIn = sessionR.isOk() && !!sessionR.value}
       {#if loggedIn}
         <NavLi
           class="w-full cursor-pointer text-left text-lg"

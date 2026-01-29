@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Button, Modal, Hr, Label, Input } from 'flowbite-svelte';
   import type { CreateLibraryData } from 'netsblox-cloud-client/src/types/CreateLibraryData';
-  import Dropzone from './Dropzone.svelte';
+  import Dropzone from '../misc/Dropzone.svelte';
   import { LibraryTable } from '$lib/data/tables/library.svelte';
   import { fromPromise } from 'neverthrow';
   import { DashboardError } from '$lib/utils/errors';

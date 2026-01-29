@@ -13,10 +13,10 @@
     RefreshOutline,
     TrashBinOutline,
   } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
-  import CreateLibraryModal from '$lib/comp/CreateLibraryModal.svelte';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
+  import CreateLibraryModal from '$lib/comp/modals/CreateLibrary.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
-  import Loading from '$lib/comp/Loading.svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
   import { getLibraries } from '$lib/utils/api/libraries';
 
   type Props = {

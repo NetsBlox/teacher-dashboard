@@ -4,7 +4,7 @@
 
   import { Button, Modal, Hr, Popover } from 'flowbite-svelte';
   import { Label, Input, TabItem, Tabs } from 'flowbite-svelte';
-  import Dropzone from './Dropzone.svelte';
+  import Dropzone from '../misc/Dropzone.svelte';
   import { QuestionCircleOutline } from 'flowbite-svelte-icons';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
   import { DashboardError } from '$lib/utils/errors';

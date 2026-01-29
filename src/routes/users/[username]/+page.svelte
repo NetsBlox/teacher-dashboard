@@ -1,29 +1,39 @@
 <script lang="ts">
-  import { Tabs, TabItem } from 'flowbite-svelte';
-  import Loading from '$lib/comp/Loading.svelte';
+  import type { PageProps } from './$types';
 
+  import {
+    Tabs,
+    TabItem,
+    Breadcrumb,
+    BreadcrumbItem,
+    Hr,
+  } from 'flowbite-svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
   import GroupTable from '$lib/comp/tables/GroupTable.svelte';
   import LibraryTable from '$lib/comp/tables/LibraryTable.svelte';
   import ProjectTable from '$lib/comp/tables/ProjectTable.svelte';
   import { getNavbarContext } from '$lib/contexts/Contexts.svelte';
-  import type { PageProps } from './$types';
   import { page } from '$app/state';
   import CollabTable from '$lib/comp/tables/CollabTable.svelte';
+  import UserDetails from '$lib/details/User.svelte';
+  import { HomeOutline } from 'flowbite-svelte-icons';
 
   getNavbarContext().title = `User: ${page.params.username}`;
-  let { data }: PageProps = $props();
-  let { librariesAR, groupsAR, projectsAR, sharedAR, userAR } = $derived(data);
+  let { data, params }: PageProps = $props();
+  let { sessionAR, librariesAR, groupsAR, projectsAR, sharedAR, userAR } =
+    $derived(data);
+  let { username: owner } = $derived(params);
 </script>
 
-{#await userAR}
+{#await sessionAR}
   <Loading />
-{:then userR}
-  {#if userR.isErr()}
-    <h class="text-white"> user not found </h>
+{:then sessionR}
+  {#if sessionR.isErr()}
+    <h1 class="text-white">Failed to load page</h1>
   {:else}
-    {@const owner = userR.value.username}
-    <section class="flex flex-row gap-2">
-      <div class="flex-2/3">
+    <article class="flex flex-row gap-2" aria-label="User Profile">
+      <UserDetails bind:userAR />
+      <section class="flex-2/3" aria-label="User resources">
         <Tabs>
           <TabItem open title="Groups">
             <GroupTable bind:groupsAR {owner} />
@@ -38,7 +48,7 @@
             <LibraryTable bind:librariesAR {owner} />
           </TabItem>
         </Tabs>
-      </div>
-    </section>
+      </section>
+    </article>
   {/if}
 {/await}

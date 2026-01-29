@@ -8,11 +8,11 @@
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
   import { PlusOutline, RefreshOutline, TrashBinOutline } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
-  import CreateProjectModal from '$lib/comp/CreateProjectModal.svelte';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
+  import CreateProjectModal from '$lib/comp/modals/CreateProject.svelte';
   import { ProjectTable } from '$lib/data/tables/projects.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
-  import Loading from '$lib/comp/Loading.svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
   import { getProjects } from '$lib/utils/api/projects';
 
   type Props = {

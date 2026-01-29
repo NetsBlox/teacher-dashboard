@@ -10,7 +10,7 @@
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
   import { RefreshOutline, TrashBinOutline } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
   import { SubmissionTable } from '$lib/data/tables/submissions.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
   import { getSubmissions } from '$lib/utils/api/groups';

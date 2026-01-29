@@ -2,8 +2,8 @@
   import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
   import type { DashboardError } from '$lib/utils/errors';
   import type { ResultAsync } from 'neverthrow';
-  import type { Group } from 'netsblox-cloud-client/src/types/Group';
   import type { ConstructParams } from '$lib/utils/tables';
+  import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
@@ -13,29 +13,29 @@
     RefreshOutline,
     TrashBinOutline,
   } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
   import { AssignmentTable } from '$lib/data/tables/assignments.svelte';
-  import CreateAssignmentModal from '$lib/comp/CreateAssignmentModal.svelte';
+  import CreateAssignmentModal from '$lib/comp/modals/CreateAssignment.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
   import { getAssignments } from '$lib/utils/api/groups';
-  import Loading from '$lib/comp/Loading.svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
 
   type Props = {
     assignmentsAR: ResultAsync<Assignment[], DashboardError>;
-    group: Group;
+    groupId: GroupId;
   };
 
-  let { assignmentsAR = $bindable(), group }: Props = $props();
+  let { assignmentsAR = $bindable(), groupId }: Props = $props();
 
   // svelte-ignore state_referenced_locally
   const params: ConstructParams<AssignmentTable, Assignment> = {
     values: [],
-    owner: group.id,
+    owner: groupId,
     keys: ['name', 'originTime', 'dueDate'],
     searchKey: 'name',
     toaster: getErrorContext(),
     refresher: () => {
-      assignmentsAR = getAssignments(fetch, group.id);
+      assignmentsAR = getAssignments(fetch, groupId);
     },
   };
 
@@ -61,25 +61,31 @@
         hoverable={true}
         bind:inputValue={table.search}
       />
-      <section>
-        <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline />
-          <span class="hidden md:inline"> Refresh</span>
-        </Button>
-        <Button outline onclick={() => (creatorOpen = true)}>
-          <PlusOutline />
-          <span class="hidden md:inline"> Create Assignment</span>
-        </Button>
-        <Button
-          onclick={() => (deletorOpen = true)}
-          disabled={!table.entries.some((x) => x.selected)}
-          outline
-          color="red"
-        >
-          <TrashBinOutline />
-          <span class="hidden md:inline"> Delete</span>
-        </Button>
-      </section>
+      <menu>
+        <menuitem>
+          <Button outline onclick={() => table.refresh()} color="amber">
+            <RefreshOutline />
+            <span class="hidden md:inline"> Refresh</span>
+          </Button>
+        </menuitem>
+        <menuitem>
+          <Button outline onclick={() => (creatorOpen = true)}>
+            <PlusOutline />
+            <span class="hidden md:inline"> Create Assignment</span>
+          </Button>
+        </menuitem>
+        <menuitem>
+          <Button
+            onclick={() => (deletorOpen = true)}
+            disabled={!table.entries.some((x) => x.selected)}
+            outline
+            color="red"
+          >
+            <TrashBinOutline />
+            <span class="hidden md:inline"> Delete</span>
+          </Button>
+        </menuitem>
+      </menu>
     </span>
     <Table shadow hoverable={true}>
       <TableHeaders {headers} {table} />

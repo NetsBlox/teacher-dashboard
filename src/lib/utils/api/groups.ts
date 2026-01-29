@@ -9,6 +9,10 @@ import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId'
 import type { CreateAssignmentData } from 'netsblox-cloud-client/src/types/CreateAssignmentData';
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { SubmissionId } from 'netsblox-cloud-client/src/types/SubmissionId';
+import type { UpdateAssignmentData } from 'netsblox-cloud-client/src/types/UpdateAssignmentData';
+import type { UpdateGroupData } from 'netsblox-cloud-client/src/types/UpdateGroupData';
+import type { GroupJoinCode } from 'netsblox-cloud-client/src/types/GroupJoinCode';
+
 import { fromPromise } from 'neverthrow';
 import { NetworkError } from '../errors';
 import { CLOUD_URL } from '../routes';
@@ -17,7 +21,7 @@ import { FetchBuilder, mapResponse } from './common';
 export function getGroup(fetch: Fetch, groupId: string) {
   const { url, opt } = FetchBuilder.to(`${CLOUD_URL}/groups/id/${groupId}`);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Group);
   return result;
 }
@@ -25,7 +29,7 @@ export function getGroup(fetch: Fetch, groupId: string) {
 export function getGroups(fetch: Fetch, username: string) {
   const { url, opt } = FetchBuilder.to(`${CLOUD_URL}/groups/user/${username}/`);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Group[]);
   return result;
 }
@@ -38,7 +42,20 @@ export function createGroup(
   const endpoint = `${CLOUD_URL}/groups/user/${username}/`;
   const { url, opt } = FetchBuilder.to(endpoint).payload(data).method('POST');
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
+    .map((json) => json as Group);
+  return result;
+}
+
+export function updateGroup(
+  fetch: Fetch,
+  groupId: string,
+  data: UpdateGroupData,
+) {
+  const endpoint = `${CLOUD_URL}/groups/id/${groupId}`;
+  const { url, opt } = FetchBuilder.to(endpoint).payload(data).method('PATCH');
+  const result = fromPromise(fetch(url, opt), () => NetworkError())
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Group);
   return result;
 }
@@ -47,7 +64,7 @@ export function deleteGroup(fetch: Fetch, groupId: string) {
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}`;
   const { url, opt } = FetchBuilder.to(endpoint).method('DELETE');
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Group);
   return result;
 }
@@ -56,7 +73,7 @@ export function getMembers(fetch: Fetch, groupId: string) {
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}/members`;
   const { url, opt } = FetchBuilder.to(endpoint);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as User[]);
   return result;
 }
@@ -69,7 +86,7 @@ export function createAssignment(
   const endpoint = `${CLOUD_URL}/groups/id/${id}/assignments/`;
   const { url, opt } = FetchBuilder.to(endpoint).payload(data).method('POST');
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Assignment[]);
   return result;
 }
@@ -78,7 +95,7 @@ export function getAssignments(fetch: Fetch, groupId: string) {
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}/assignments/`;
   const { url, opt } = FetchBuilder.to(endpoint);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Assignment[]);
   return result;
 }
@@ -91,7 +108,21 @@ export function getAssignment(
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}/assignments/id/${assignmentId}/`;
   const { url, opt } = FetchBuilder.to(endpoint);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
+    .map((json) => json as Assignment);
+  return result;
+}
+
+export function updateAssignment(
+  fetch: Fetch,
+  groupId: string,
+  assignmentId: string,
+  data: UpdateAssignmentData,
+) {
+  const endpoint = `${CLOUD_URL}/groups/id/${groupId}/assignments/id/${assignmentId}/`;
+  const { url, opt } = FetchBuilder.to(endpoint).payload(data).method('PATCH');
+  const result = fromPromise(fetch(url, opt), () => NetworkError())
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Assignment);
   return result;
 }
@@ -104,7 +135,7 @@ export function deleteAssignment(
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}/assignments/id/${assignmentId}/`;
   const { url, opt } = FetchBuilder.to(endpoint).method('DELETE');
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Assignment);
   return result;
 }
@@ -117,7 +148,7 @@ export function getSubmissions(
   const endpoint = `${CLOUD_URL}/groups/id/${groupId}/assignments/id/${assignmentId}/submissions/`;
   const { url, opt } = FetchBuilder.to(endpoint);
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Submission[]);
   return result;
 }
@@ -131,7 +162,34 @@ export function deleteSubmission(
   const endpoint = `${CLOUD_URL}/groups/id/${gid}/assignments/id/${aid}/submissions/id/${id}/`;
   const { url, opt } = FetchBuilder.to(endpoint).method('DELETE');
   const result = fromPromise(fetch(url, opt), () => NetworkError())
-    .andThen((rsp) => mapResponse(rsp, {parse: 'json'}))
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
     .map((json) => json as Submission);
+  return result;
+}
+
+export function createJoinCode(fetch: Fetch, id: GroupId) {
+  const endpoint = `${CLOUD_URL}/groups/id/${id}/code`;
+  const { url, opt } = FetchBuilder.to(endpoint).method("POST");
+  const result = fromPromise(fetch(url, opt), () => NetworkError())
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
+    .map((json) => json as GroupJoinCode);
+  return result;
+}
+
+export function getJoinCode(fetch: Fetch, id: GroupId) {
+  const endpoint = `${CLOUD_URL}/groups/id/${id}/code`;
+  const { url, opt } = FetchBuilder.to(endpoint);
+  const result = fromPromise(fetch(url, opt), () => NetworkError())
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
+    .map((json) => json as GroupJoinCode);
+  return result;
+}
+
+export function deleteJoinCode(fetch: Fetch, id: GroupId) {
+  const endpoint = `${CLOUD_URL}/groups/id/${id}/code`;
+  const { url, opt } = FetchBuilder.to(endpoint).method("DELETE");
+  const result = fromPromise(fetch(url, opt), () => NetworkError())
+    .andThen((rsp) => mapResponse(rsp, { parse: 'json' }))
+    .map((json) => json as GroupJoinCode);
   return result;
 }

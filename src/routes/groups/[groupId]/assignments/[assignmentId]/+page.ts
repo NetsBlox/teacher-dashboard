@@ -3,7 +3,7 @@ import type { AssignmentId } from 'netsblox-cloud-client/src/types/AssignmentId'
 import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params }) => {
+export const load: PageLoad = ({ fetch, params }) => {
   const groupId: GroupId = params.groupId;
   const assignmentId: AssignmentId = params.assignmentId;
   const assignmentAR = getAssignment(fetch, groupId, assignmentId);

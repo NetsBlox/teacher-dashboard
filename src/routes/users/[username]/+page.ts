@@ -4,7 +4,7 @@ import { getCollabs, getProjects } from '$lib/utils/api/projects';
 import { getUser } from '$lib/utils/api/users';
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch, params }) => {
+export const load: PageLoad = ({ fetch, params }) => {
   const userAR = getUser(fetch, params.username);
   const projectsAR = getProjects(fetch, params.username);
   const sharedAR = getCollabs(fetch, params.username);

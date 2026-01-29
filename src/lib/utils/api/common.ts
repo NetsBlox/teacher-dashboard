@@ -24,7 +24,7 @@ export class FetchBuilder {
     return this;
   }
 
-  payload(data: object) {
+  payload(data: object | string) {
     this.opt.body = JSON.stringify(data);
     this.opt.headers = {
       ...this.opt.headers,

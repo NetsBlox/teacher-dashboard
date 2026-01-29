@@ -9,7 +9,7 @@
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
   import { CollabTable } from '$lib/data/tables/collab.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
-  import Loading from '$lib/comp/Loading.svelte';
+  import Loading from '$lib/comp/misc/Loading.svelte';
   import { getCollabs } from '$lib/utils/api/projects';
   import { RefreshOutline } from 'flowbite-svelte-icons';
 

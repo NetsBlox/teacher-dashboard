@@ -4,6 +4,7 @@
   import type { DashboardError } from '$lib/utils/errors';
   import type { User } from 'netsblox-cloud-client/src/types/User';
   import type { ConstructParams } from '$lib/utils/tables';
+  import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
@@ -13,30 +14,31 @@
     RefreshOutline,
     TrashBinOutline,
   } from 'flowbite-svelte-icons';
-  import DeleteEntryModal from '$lib/comp/DeleteEntryModal.svelte';
-  import CreateUserModal from '$lib/comp/CreateUserModal.svelte';
+  import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
+  import CreateUserModal from '$lib/comp/modals/CreateUser.svelte';
   import { getErrorContext } from '$lib/contexts/ErrorContext.svelte';
   import { MemberTable } from '$lib/data/tables/members.svelte';
   import { getMembers } from '$lib/utils/api/groups';
-  import Loading from '../Loading.svelte';
+  import Loading from '../misc/Loading.svelte';
+  import { page } from '$app/state';
 
   type Props = {
-    group: Group;
+    groupId: GroupId;
     membersAR: ResultAsync<User[], DashboardError>;
   };
 
-  let { membersAR = $bindable(), group }: Props = $props();
+  let { membersAR = $bindable(), groupId }: Props = $props();
   const headers = ['username', 'email', 'actions'];
 
   // svelte-ignore state_referenced_locally
   const params: ConstructParams<MemberTable, User> = {
     values: [],
-    owner: group,
+    owner: groupId,
     keys: ['username', 'email'],
     searchKey: 'username',
     toaster: getErrorContext(),
     refresher: () => {
-      membersAR = getMembers(fetch, group.id);
+      membersAR = getMembers(fetch, groupId);
     },
   };
 

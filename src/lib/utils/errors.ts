@@ -1,7 +1,7 @@
 import { ErrorContext } from '$lib/contexts/ErrorContext.svelte';
 
 export class DashboardError {
-  inner: any;
+  inner: unknown;
   msg: string;
   constructor(msg: string) {
     this.msg = msg;
@@ -23,11 +23,6 @@ export class DashboardError {
 
   wrap(e: unknown) {
     this.inner = e;
-    return this;
-  }
-
-  rewrap(map: (inner: unknown) => unknown) {
-    this.inner = map(this.inner);
     return this;
   }
 

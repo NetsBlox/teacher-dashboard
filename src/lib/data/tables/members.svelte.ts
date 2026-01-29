@@ -8,12 +8,13 @@ import type { Group } from 'netsblox-cloud-client/src/types/Group';
 import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import type { ResultAsync } from 'neverthrow';
+import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
 import { goto } from '$app/navigation';
 import { createUser, createUserBatch, deleteUser } from '$lib/utils/api/users';
 import { generatePassword, parseCSV } from '$lib/utils/misc';
 import tu from '$lib/utils/tables';
-import { isNewUserErrorResponseArray } from '$lib/utils/validators';
+import { isNewUserErrorResponseArray } from '$lib/utils/guards';
 import { watch } from 'runed';
 
 export type Batch = { prefix: string; amount: number; email: string };
@@ -21,7 +22,7 @@ export type Batch = { prefix: string; amount: number; email: string };
 export class MemberTable
   implements HasEntries<User>, Searchable<User>, Deleteable<User>
 {
-  owner: Group;
+  owner: GroupId;
   entries: TableEntry<User>[];
   toaster: ErrorContext;
   keys: (keyof User)[];
@@ -57,7 +58,7 @@ export class MemberTable
   }
 
   createUser(data: NewUser) {
-    const result = createUser(fetch, { ...data, groupId: this.owner.id })
+    const result = createUser(fetch, { ...data, groupId: this.owner })
       .orTee((e) => e.prepend('User Creation Failed: ').toast(this.toaster))
       .andTee(() => this.refresh());
 
@@ -65,7 +66,7 @@ export class MemberTable
   }
 
   createUsers({ prefix, amount, email }: Batch) {
-    const groupId = this.owner.id;
+    const groupId = this.owner;
     const userPassPairs: ArrayIterator<[string, string]> = Array(amount)
       .keys()
       .map((idx) => idx.toString().padStart(3, '0'))
@@ -103,7 +104,7 @@ export class MemberTable
   }
 
   createUsersFromCSV(file: File): ResultAsync<User[], DashboardError> {
-    const groupId = this.owner.id;
+    const groupId = this.owner;
     const result = parseCSV(file, ['username', 'email', 'password'])
       .map((rows) =>
         rows.map(([username, email, password]): NewUser => {
