@@ -68,12 +68,13 @@ export function parseCSV(file: File, headers: string[]) {
   const result = ResultAsync.fromPromise(file.text(), () => null)
     .mapErr(() => DashboardError.create('Failed to extract text from file.'))
     .map((text) => text.split(split_regex))
+    .map((rows) => (rows.at(-1) === '' ? rows.slice(0, -1) : rows))
     .map((rows) => rows.map((row) => row.split(',')))
     .andThrough((rows) => {
       if (!arraysEqual(rows[0], headers)) {
         const msg = `Headers (${headers.join(',')}) missing.`;
         return err(DashboardError.create(msg));
-      } else return ok();
+      } else return ok(rows);
     })
     .andThrough((rows) => {
       for (const [idx, row] of rows.entries()) {

@@ -46,19 +46,19 @@
       .andTee((csv) => csv.download('passwords.csv'))
       .andTee(() => table.refresh())
       .orTee((err) => {
-        if (err instanceof CSV) {
-          err.download('errors.csv');
-        } else {
-          err.toast(toaster);
+        if (err.inner instanceof CSV) {
+          err.inner.download('errors.csv');
         }
+        err.toast(toaster);
       });
   }
 
   function handleFile(uploadedFile: File) {
     table.createUsersFromCSV(uploadedFile).orTee((err) => {
-      if (err instanceof CSV) {
-        err.download('errors.csv');
+      if (err.inner instanceof CSV) {
+        err.inner.download('errors.csv');
       }
+      err.toast(toaster);
     });
   }
 </script>

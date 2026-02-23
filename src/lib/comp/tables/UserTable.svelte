@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { Group } from 'netsblox-cloud-client/src/types/Group';
   import type { ResultAsync } from 'neverthrow';
   import type { DashboardError } from '$lib/utils/errors';
   import type { User } from 'netsblox-cloud-client/src/types/User';
@@ -20,7 +19,6 @@
   import { MemberTable } from '$lib/data/tables/members.svelte';
   import { getMembers } from '$lib/utils/api/groups';
   import Loading from '../misc/Loading.svelte';
-  import { page } from '$app/state';
 
   type Props = {
     groupId: GroupId;

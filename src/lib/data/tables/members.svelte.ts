@@ -4,17 +4,17 @@ import type { ConstructParams, Deleteable } from '$lib/utils/tables';
 import type { DashboardError } from '$lib/utils/errors';
 import type { HasEntries, Searchable, TableEntry } from '$lib/utils/tables';
 import type { StringKey } from '$lib/utils/types';
-import type { Group } from 'netsblox-cloud-client/src/types/Group';
+import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 import type { NewUser } from 'netsblox-cloud-client/src/types/NewUser';
 import type { User } from 'netsblox-cloud-client/src/types/User';
 import type { ResultAsync } from 'neverthrow';
-import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
 import { goto } from '$app/navigation';
 import { createUser, createUserBatch, deleteUser } from '$lib/utils/api/users';
+import { isNewUserErrorResponseArray } from '$lib/utils/guards';
 import { generatePassword, parseCSV } from '$lib/utils/misc';
 import tu from '$lib/utils/tables';
-import { isNewUserErrorResponseArray } from '$lib/utils/guards';
+import type { NewUserErrorResponse } from 'netsblox-cloud-client/src/types/NewUserErrorResponse';
 import { watch } from 'runed';
 
 export type Batch = { prefix: string; amount: number; email: string };
@@ -83,12 +83,8 @@ export class MemberTable
     const result = createUserBatch(fetch, { users: newUsers })
       .mapErr((de) => {
         if (isNewUserErrorResponseArray(de.inner)) {
-          const builder = tu.CSVBuilder.new().addRow('username', 'error');
-          for (const e of de.inner) {
-            builder.addRow(e.username, e.message);
-          }
-          de.prepend('An error report has been generated: ');
-          de.wrap(builder.build());
+          const csv = generateNewUserResponseCSV(de.inner);
+          de.wrap(csv).prepend('An error report has been generated: ');
         }
         return de;
       })
@@ -112,15 +108,29 @@ export class MemberTable
         }),
       )
       .andThen((newUsers) => createUserBatch(fetch, { users: newUsers }))
-      .andTee(() => this.refresh())
-      .orTee((e) => e.toast(this.toaster));
+      .mapErr((de) => {
+        if (isNewUserErrorResponseArray(de.inner)) {
+          const csv = generateNewUserResponseCSV(de.inner);
+          de.wrap(csv).prepend('An error report has been generated: ');
+        }
+        return de;
+      })
+      .andTee(() => this.refresh());
 
     return result;
   }
 
   private actionMaker = (value: User) => {
     const View = () => void goto('/users/' + value.username + '/');
-    View.label = "View"
+    View.label = 'View';
     return [View];
   };
+}
+
+function generateNewUserResponseCSV(rsp: NewUserErrorResponse[]) {
+  const builder = tu.CSVBuilder.new().addRow('username', 'error');
+  for (const e of rsp) {
+    builder.addRow(e.username, e.message);
+  }
+  return builder.build();
 }
