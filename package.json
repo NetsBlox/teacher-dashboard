@@ -16,24 +16,28 @@
     "@playwright/test": "^1.50.1",
     "@sveltejs/adapter-node": "^5.2.12",
     "@sveltejs/kit": "^2.17.1",
-    "@sveltejs/vite-plugin-svelte": "^5.0.3",
-    "autoprefixer": "^10.4.20",
+    "@sveltejs/vite-plugin-svelte": "^6.2.1",
+    "@tailwindcss/vite": "^4.1.17",
     "date-fns": "^4.1.0",
-    "flowbite": "^3.1.1",
-    "flowbite-svelte": "^0.48.6",
-    "flowbite-svelte-icons": "^2.0.2",
-    "netsblox-cloud-client": "github:netsblox/cloud.js#v2.5.0",
-    "postcss": "^8.5.1",
+    "flowbite": "^4.0.1",
+    "flowbite-svelte": "^1.29.1",
+    "flowbite-svelte-icons": "^3.0.0",
+    "netsblox-cloud-client": "github:netsblox/cloud.js#ef678ca",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-svelte": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "svelte": "^5.19.7",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "svelte": "^5.45.3",
     "svelte-check": "^4.1.4",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.1.17",
     "tslib": "^2.8.1",
     "typescript": "^5.7.3",
-    "vite": "^6.0.11",
-    "vitest": "^3.0.5"
+    "vite": "^7.2.6",
+    "vitest": "^3.2.4"
+  },
+  "overrides": {
+    "@sveltejs/kit": {
+      "cookie": "^0.7.0"
+    }
   },
   "type": "module",
   "prettier": {
@@ -44,9 +48,10 @@
       "prettier-plugin-svelte",
       "prettier-plugin-organize-imports",
       "prettier-plugin-tailwindcss"
-    ],
-    "tailwindAttributes": [
-      "class"
     ]
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "runed": "^0.37.0"
   }
 }

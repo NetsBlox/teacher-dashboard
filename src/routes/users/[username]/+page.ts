@@ -1,77 +1,14 @@
-import { CLOUD_URL } from '$lib/utils/routes';
-import { RequestError } from 'netsblox-cloud-client/src/error';
-import type { Group } from 'netsblox-cloud-client/src/types/Group';
-import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMetadata';
-import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
-import type { User } from 'netsblox-cloud-client/src/types/User';
+import { getGroups } from '$lib/utils/api/groups';
+import { getLibraries } from '$lib/utils/api/libraries';
+import { getCollabs, getProjects } from '$lib/utils/api/projects';
+import { getUser } from '$lib/utils/api/users';
 import type { PageLoad } from './$types';
-import { DashboardError } from '$lib/utils/errors';
-import type { Fetch } from '$lib/utils/types';
 
-const getUser = async (fetch: Fetch, username: string) => {
-  const response = await fetch(CLOUD_URL + '/users/' + username, {
-    credentials: 'include',
-  });
-  if (!response.ok) {
-    throw RequestError.from(response);
-  }
-
-  return (await response.json()) as User;
-};
-
-const getProjects = async (fetch: Fetch, username: string) => {
-  const response = await fetch(CLOUD_URL + '/projects/user/' + username, {
-    credentials: 'include',
-  });
-  if (!response.ok) {
-    throw RequestError.from(response);
-  }
-  return (await response.json()) as ProjectMetadata[];
-};
-
-const getSharedProjects = async (fetch: Fetch, username: string) => {
-  const response = await fetch(CLOUD_URL + '/projects/shared/' + username, {
-    credentials: 'include',
-  });
-  if (!response.ok) {
-    throw RequestError.from(response);
-  }
-  return (await response.json()) as ProjectMetadata[];
-};
-
-const getGroups = async (fetch: Fetch, username: string) => {
-  const response = await fetch(CLOUD_URL + '/groups/user/' + username + '/', {
-    credentials: 'include',
-  });
-  if (!response.ok) {
-    throw RequestError.from(response);
-  }
-  return (await response.json()) as Group[];
-};
-
-const getLibraries = async (fetch: Fetch, username: string) => {
-  const response = await fetch(
-    CLOUD_URL + '/libraries/user/' + username + '/',
-    { credentials: 'include' },
-  );
-  if (!response.ok) {
-    throw RequestError.from(response);
-  }
-  return (await response.json()) as LibraryMetadata[];
-};
-
-export const load: PageLoad = async ({ fetch, params }) => {
-  const userP = getUser(fetch, params.username);
-  const projectsP = getProjects(fetch, params.username);
-  const sharedP = getSharedProjects(fetch, params.username);
-  const librariesP = getLibraries(fetch, params.username);
-  const groupsP = getGroups(fetch, params.username);
-  try {
-    const allPs = Promise.all([userP, projectsP, sharedP, librariesP, groupsP]);
-    const [user, projects, shared, libraries, groups] = await allPs;
-    return { user, projects, shared, libraries, groups };
-  } catch (err) {
-    DashboardError.create("Failed to load user.").toast();
-    return { user: null, projects: [], shared: [], libraries: [], groups: [] };
-  }
+export const load: PageLoad = ({ fetch, params }) => {
+  const userAR = getUser(fetch, params.username);
+  const projectsAR = getProjects(fetch, params.username);
+  const sharedAR = getCollabs(fetch, params.username);
+  const librariesAR = getLibraries(fetch, params.username);
+  const groupsAR = getGroups(fetch, params.username);
+  return { userAR, projectsAR, sharedAR, librariesAR, groupsAR };
 };
