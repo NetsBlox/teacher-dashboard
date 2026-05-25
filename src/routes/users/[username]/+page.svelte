@@ -1,13 +1,7 @@
 <script lang="ts">
   import type { PageProps } from './$types';
 
-  import {
-    Tabs,
-    TabItem,
-    Breadcrumb,
-    BreadcrumbItem,
-    Hr,
-  } from 'flowbite-svelte';
+  import { Tabs, TabItem, } from 'flowbite-svelte';
   import Loading from '$lib/comp/misc/Loading.svelte';
   import GroupTable from '$lib/comp/tables/GroupTable.svelte';
   import LibraryTable from '$lib/comp/tables/LibraryTable.svelte';
@@ -15,13 +9,20 @@
   import { getNavbarContext } from '$lib/contexts/Contexts.svelte';
   import { page } from '$app/state';
   import CollabTable from '$lib/comp/tables/CollabTable.svelte';
+  import SettingsTable from '$lib/comp/tables/SettingsTable.svelte';
   import UserDetails from '$lib/details/User.svelte';
-  import { HomeOutline } from 'flowbite-svelte-icons';
 
   getNavbarContext().title = `User: ${page.params.username}`;
   let { data, params }: PageProps = $props();
-  let { sessionAR, librariesAR, groupsAR, projectsAR, sharedAR, userAR } =
-    $derived(data);
+  let {
+    sessionAR,
+    librariesAR,
+    groupsAR,
+    projectsAR,
+    sharedAR,
+    userAR,
+    serviceSettingsAR,
+  } = $derived(data);
   let { username: owner } = $derived(params);
 </script>
 
@@ -46,6 +47,9 @@
           </TabItem>
           <TabItem title="Libraries">
             <LibraryTable bind:librariesAR {owner} />
+          </TabItem>
+          <TabItem title="Service Settings">
+            <SettingsTable bind:serviceSettingsAR {owner} />
           </TabItem>
         </Tabs>
       </section>

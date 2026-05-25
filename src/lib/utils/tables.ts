@@ -5,6 +5,8 @@ import { DashboardError } from './errors';
 
 export type Action = (() => void) & { label: string };
 
+export type TableHeader<T> = {title: string, key: keyof T}
+
 export type TableEntry<T> = {
   selected: boolean;
   value: T;
@@ -20,9 +22,9 @@ export interface HasEntries<T> {
   entries: TableEntry<T>[];
 }
 
-export interface Deleteable<T> {
-  deletor: (v: T) => ResultAsync<T, DashboardError>;
-  deleteSelected: () => ResultAsync<T[], DashboardError>;
+export interface Deleteable<T, R=T> {
+  deletor: (v: T) => ResultAsync<R, DashboardError>;
+  deleteSelected: () => ResultAsync<R[], DashboardError>;
 }
 
 export interface Refreshable {
@@ -78,9 +80,9 @@ export function filter<T>(table: HasEntries<T> & Searchable<T>) {
   });
 }
 
-export function deleteEntries<T>(
+export function deleteEntries<T, U=T>(
   table: HasEntries<T>,
-  deletor: (v: T) => ResultAsync<T, DashboardError>,
+  deletor: (v: T) => ResultAsync<U, DashboardError>,
 ) {
   const results = table.entries.flatMap((entry) => {
     if (entry.selected && entry.visible) {

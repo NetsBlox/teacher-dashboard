@@ -1,3 +1,4 @@
+import type { SettingValue } from "netsblox-cloud-client/src/types/SettingValue";
 import type { NetsbloxTime } from "./types";
 import type { PartialCreateProjectData } from "./types";
 import type { NewUserErrorResponse } from "netsblox-cloud-client/src/types/NewUserErrorResponse";

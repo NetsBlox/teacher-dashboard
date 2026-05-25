@@ -2,7 +2,7 @@
   import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
   import type { ResultAsync } from 'neverthrow';
   import type { DashboardError } from '$lib/utils/errors';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
 
   import { Button, Table, TableSearch } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
@@ -20,12 +20,17 @@
 
   let { projectsAR = $bindable(), owner }: Props = $props();
 
-  const headers = ['name', 'owner', 'created', 'last modified', 'actions'];
+  const headers: TableHeader<ProjectMetadata>[] = [
+    { title: 'name', key: 'name' },
+    { title: 'owner', key: 'owner' },
+    { title: 'created', key: 'originTime' },
+    { title: 'last modified', key: 'updated' },
+  ];
   // svelte-ignore state_referenced_locally
   const tableParams: ConstructParams<CollabTable, ProjectMetadata> = {
     owner,
     values: [],
-    keys: ['name', 'owner', 'originTime', 'updated'],
+    keys: headers.map((v) => v.key),
     searchKey: 'name',
     toaster: getErrorContext(),
     refresher: () => {
@@ -60,7 +65,7 @@
       </section>
     </span>
     <Table shadow hoverable={true}>
-      <TableHeaders {headers} {table} />
+      <TableHeaders {headers} {table} addActions/>
       <TableEntries {table} />
     </Table>
   {/if}

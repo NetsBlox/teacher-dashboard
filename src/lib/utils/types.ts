@@ -1,4 +1,17 @@
 import type { RoleData } from 'netsblox-cloud-client/src/types/RoleData';
+import type { ServiceHostId } from 'netsblox-cloud-client/src/types/ServiceHostId';
+import type { ServiceName } from 'netsblox-cloud-client/src/types/ServiceName';
+import type { SettingName } from 'netsblox-cloud-client/src/types/SettingName';
+import type { SettingValue } from 'netsblox-cloud-client/src/types/SettingValue';
+import type { SettingVisiblity } from 'netsblox-cloud-client/src/types/SettingVisiblity';
+
+export type FlatServiceSetting = {
+    host: ServiceHostId;
+    service: ServiceName;
+    name: SettingName;
+    value: string;
+    visibility: SettingVisiblity
+};
 
 export type Fetch = (
   input: RequestInfo | URL,

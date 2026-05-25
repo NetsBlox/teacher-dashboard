@@ -52,7 +52,7 @@ function mapOkRsp(rsp: Response, parse?: 'json' | 'text') {
   } else if (parse === 'json') {
     return fromPromise(rsp.json(), de.ParsingFailed);
   } else {
-    return okAsync();
+    return okAsync(rsp);
   }
 }
 
