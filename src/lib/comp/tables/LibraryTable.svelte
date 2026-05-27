@@ -2,7 +2,7 @@
   import type { LibraryMetadata } from 'netsblox-cloud-client/src/types/LibraryMetadata';
   import { type ResultAsync } from 'neverthrow';
   import { type DashboardError } from '$lib/utils/errors';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
 
   import { LibraryTable } from '$lib/data/tables/library.svelte';
   import { Table, TableSearch, Button } from 'flowbite-svelte';
@@ -28,7 +28,10 @@
 
   let creatorOpen = $state(false);
   let deletorOpen = $state(false);
-  const headers = ['name', 'state'];
+  const headers: TableHeader<LibraryMetadata>[] = [
+    { title: 'name', key: 'name' },
+    { title: 'state', key: 'state' },
+  ];
 
   // svelte-ignore state_referenced_locally
   const tableParams: ConstructParams<LibraryTable, LibraryMetadata> = {

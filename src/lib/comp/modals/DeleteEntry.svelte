@@ -1,9 +1,9 @@
-<script lang="ts" generics="T">
+<script lang="ts" generics="T, U">
   import type { HasEntries, Deleteable } from '$lib/utils/tables';
   import { Button, Modal, Hr } from 'flowbite-svelte';
 
   interface Props {
-    table: HasEntries<T> & Deleteable<T>;
+    table: HasEntries<T> & Deleteable<T, U>;
     label: String;
     open: boolean;
   }

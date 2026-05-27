@@ -6,11 +6,18 @@
   import Loading from '$lib/comp/misc/Loading.svelte';
   import { page } from '$app/state';
   import GroupDetails from '$lib/details/Group.svelte';
+  import GroupSettingsTable from '$lib/comp/tables/GroupSettingsTable.svelte';
 
   let { data } = $props();
 
-  let { sessionAR, groupAR, joinCodeAR, membersAR, assignmentsAR } =
-    $derived(data);
+  let {
+    sessionAR,
+    groupAR,
+    joinCodeAR,
+    membersAR,
+    assignmentsAR,
+    serviceSettingsAR,
+  } = $derived(data);
   const navbar = getNavbarContext();
   navbar.title = `Group: loading...`;
   // svelte-ignore state_referenced_locally
@@ -34,6 +41,9 @@
           </TabItem>
           <TabItem title="Assignments">
             <AssignmentsTable bind:assignmentsAR {groupId} />
+          </TabItem>
+          <TabItem title="Service Settings">
+            <GroupSettingsTable bind:serviceSettingsAR {groupId} />
           </TabItem>
         </Tabs>
       </section>

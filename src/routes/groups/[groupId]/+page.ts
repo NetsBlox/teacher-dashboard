@@ -4,6 +4,7 @@ import {
   getJoinCode,
   getMembers,
 } from '$lib/utils/api/groups';
+import { getGroupSettings } from '$lib/utils/api/services';
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = ({ fetch, params }) => {
@@ -11,5 +12,6 @@ export const load: PageLoad = ({ fetch, params }) => {
   const joinCodeAR = getJoinCode(fetch, params.groupId);
   const membersAR = getMembers(fetch, params.groupId);
   const assignmentsAR = getAssignments(fetch, params.groupId);
-  return { groupAR, joinCodeAR, membersAR, assignmentsAR };
+  const serviceSettingsAR = getGroupSettings(fetch, params.groupId);
+  return { groupAR, joinCodeAR, membersAR, assignmentsAR, serviceSettingsAR };
 };

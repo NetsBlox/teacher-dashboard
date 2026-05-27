@@ -2,12 +2,16 @@
   import type { DashboardError } from '$lib/utils/errors';
   import type { ResultAsync } from 'neverthrow';
   import type { ProjectMetadata } from 'netsblox-cloud-client/src/types/ProjectMetadata';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
   import TableEntries from '$lib/comp/tables/TableEntries.svelte';
-  import { PlusOutline, RefreshOutline, TrashBinOutline } from 'flowbite-svelte-icons';
+  import {
+    PlusOutline,
+    RefreshOutline,
+    TrashBinOutline,
+  } from 'flowbite-svelte-icons';
   import DeleteEntryModal from '$lib/comp/modals/DeleteEntry.svelte';
   import CreateProjectModal from '$lib/comp/modals/CreateProject.svelte';
   import { ProjectTable } from '$lib/data/tables/projects.svelte';
@@ -22,21 +26,20 @@
 
   let { projectsAR = $bindable(), owner }: Props = $props();
 
-  const values: ProjectMetadata[] = [];
-  const keys: (keyof ProjectMetadata)[] = ['name', 'originTime', 'updated'];
-  const headers = ['name', 'created', 'last modified', 'actions'];
-  const searchKey = 'name';
-  const refresher = () => (projectsAR = getProjects(fetch, owner));
-  const toaster = getErrorContext();
+  const headers: TableHeader<ProjectMetadata>[] = [
+    { title: 'name', key: 'name' },
+    { title: 'created', key: 'originTime' },
+    { title: 'last modified', key: 'updated' },
+  ];
 
   // svelte-ignore state_referenced_locally
   const params: ConstructParams<ProjectTable, ProjectMetadata> = {
-    keys,
-    owner,
-    refresher,
-    searchKey,
-    toaster,
-    values,
+    keys: headers.map((v) => v.key),
+    owner: owner,
+    refresher: () => (projectsAR = getProjects(fetch, owner)),
+    searchKey: 'name',
+    toaster: getErrorContext(),
+    values: [],
   };
 
   let creatorOpen = $state(false);
@@ -63,7 +66,7 @@
       />
       <section>
         <Button outline onclick={() => table.refresh()} color="amber">
-          <RefreshOutline/>
+          <RefreshOutline />
           <span class="hidden md:inline"> Refresh</span>
         </Button>
         <Button outline onclick={() => (creatorOpen = true)}>
@@ -82,7 +85,7 @@
       </section>
     </span>
     <Table shadow hoverable={true}>
-      <TableHeaders {headers} {table} />
+      <TableHeaders {headers} {table} addActions/>
       <TableEntries {table} />
     </Table>
     <CreateProjectModal {table} bind:open={creatorOpen} />

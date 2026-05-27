@@ -22,7 +22,7 @@
     "flowbite": "^4.0.1",
     "flowbite-svelte": "^1.29.1",
     "flowbite-svelte-icons": "^3.0.0",
-    "netsblox-cloud-client": "github:netsblox/cloud.js#ef678ca",
+    "netsblox-cloud-client": "github:netsblox/cloud.js#08f29f4",
     "prettier-plugin-organize-imports": "^4.1.0",
     "prettier-plugin-svelte": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.7.2",

@@ -2,7 +2,7 @@
   import type { ResultAsync } from 'neverthrow';
   import type { DashboardError } from '$lib/utils/errors';
   import type { User } from 'netsblox-cloud-client/src/types/User';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
   import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
@@ -26,13 +26,17 @@
   };
 
   let { membersAR = $bindable(), groupId }: Props = $props();
-  const headers = ['username', 'email', 'actions'];
+
+  const headers: TableHeader<User>[] = [
+    { title: 'username', key: 'username' },
+    { title: 'email', key: 'email' },
+  ];
 
   // svelte-ignore state_referenced_locally
   const params: ConstructParams<MemberTable, User> = {
     values: [],
     owner: groupId,
-    keys: ['username', 'email'],
+    keys: headers.map((v) => v.key),
     searchKey: 'username',
     toaster: getErrorContext(),
     refresher: () => {
@@ -82,7 +86,7 @@
       </section>
     </span>
     <Table shadow hoverable={true}>
-      <TableHeaders {headers} {table} />
+      <TableHeaders {headers} {table} addActions/>
       <TableEntries {table} />
     </Table>
     <CreateUserModal {table} bind:open={creatorOpen} />

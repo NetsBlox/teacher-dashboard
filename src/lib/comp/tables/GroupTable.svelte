@@ -2,7 +2,7 @@
   import type { Group } from 'netsblox-cloud-client/src/types/Group';
   import type { ResultAsync } from 'neverthrow';
   import type { DashboardError } from '$lib/utils/errors';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
   import TableHeaders from '$lib/comp/tables/TableHeaders.svelte';
@@ -23,18 +23,16 @@
   };
 
   let { groupsAR = $bindable(), owner }: Props = $props();
-  const headers = ['name', 'actions'];
+  const headers: TableHeader<Group>[] = [{ title: 'name', key: 'name' }];
 
   // svelte-ignore state_referenced_locally
   const tableParams: ConstructParams<GroupTable, Group> = {
-    owner,
+    owner: owner,
     values: [],
-    keys: ['name'],
+    keys: headers.map((v) => v.key),
     searchKey: 'name',
     toaster: getErrorContext(),
-    refresher: () => {
-      groupsAR = getGroups(fetch, owner);
-    },
+    refresher: () => (groupsAR = getGroups(fetch, owner)),
   };
 
   let creatorOpen = $state(false);
@@ -85,7 +83,7 @@
       </menu>
     </span>
     <Table shadow hoverable={true}>
-      <TableHeaders {headers} {table} />
+      <TableHeaders {headers} {table} addActions />
       <TableEntries {table} />
     </Table>
     <CreateGroupModal {table} bind:open={creatorOpen} />

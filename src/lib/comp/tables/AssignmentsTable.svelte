@@ -2,7 +2,7 @@
   import type { Assignment } from 'netsblox-cloud-client/src/types/Assignment';
   import type { DashboardError } from '$lib/utils/errors';
   import type { ResultAsync } from 'neverthrow';
-  import type { ConstructParams } from '$lib/utils/tables';
+  import type { ConstructParams, TableHeader } from '$lib/utils/tables';
   import type { GroupId } from 'netsblox-cloud-client/src/types/GroupId';
 
   import { Table, TableSearch, Button } from 'flowbite-svelte';
@@ -27,11 +27,17 @@
 
   let { assignmentsAR = $bindable(), groupId }: Props = $props();
 
+  const headers: TableHeader<Assignment>[] = [
+    { title: 'name', key: 'name' },
+    { title: 'created', key: 'originTime' },
+    { title: 'due date', key: 'dueDate' },
+  ];
+
   // svelte-ignore state_referenced_locally
   const params: ConstructParams<AssignmentTable, Assignment> = {
     values: [],
     owner: groupId,
-    keys: ['name', 'originTime', 'dueDate'],
+    keys: headers.map((v) => v.key),
     searchKey: 'name',
     toaster: getErrorContext(),
     refresher: () => {
@@ -39,7 +45,6 @@
     },
   };
 
-  const headers = ['name', 'origin time', 'due date', 'actions'];
   let creatorOpen = $state(false);
   let deletorOpen = $state(false);
 </script>
@@ -88,7 +93,7 @@
       </menu>
     </span>
     <Table shadow hoverable={true}>
-      <TableHeaders {headers} {table} />
+      <TableHeaders {headers} {table} addActions />
       <TableEntries {table} />
     </Table>
     <CreateAssignmentModal {table} bind:open={creatorOpen} />

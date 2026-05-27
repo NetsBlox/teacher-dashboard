@@ -1,6 +1,7 @@
 import { getGroups } from '$lib/utils/api/groups';
 import { getLibraries } from '$lib/utils/api/libraries';
 import { getCollabs, getProjects } from '$lib/utils/api/projects';
+import { getUserSettings } from '$lib/utils/api/services';
 import { getUser } from '$lib/utils/api/users';
 import type { PageLoad } from './$types';
 
@@ -10,5 +11,13 @@ export const load: PageLoad = ({ fetch, params }) => {
   const sharedAR = getCollabs(fetch, params.username);
   const librariesAR = getLibraries(fetch, params.username);
   const groupsAR = getGroups(fetch, params.username);
-  return { userAR, projectsAR, sharedAR, librariesAR, groupsAR };
+  const serviceSettingsAR = getUserSettings(fetch, params.username);
+  return {
+    userAR,
+    projectsAR,
+    sharedAR,
+    librariesAR,
+    groupsAR,
+    serviceSettingsAR,
+  };
 };
